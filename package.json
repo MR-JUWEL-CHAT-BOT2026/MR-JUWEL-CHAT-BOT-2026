@@ -2,13 +2,13 @@
   "name": "shahadat-chat-bot",
   "version": "2.0.0",
   "description": "Made By SHAHADAT SAHU",
-  "main": "Main.js",
+  "main": "Juwel.js",
   "engines": {
     "node": "20.x",
     "npm": ">=10.0.0 <13.0.0"
   },
   "scripts": {
-    "start": "node Sahu.js",
+    "start": "node Juwel.js",
     "login": "node login",
     "test": "node --trace-warnings --use_strict --async-stack-traces mirai"
   },
