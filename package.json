@@ -1,38 +1,36 @@
 {
-  "name": "shahadat-chat-bot",
+  "name": "MR-JUWEL-CHAT-BOT",
   "version": "2.0.0",
-  "description": "Made By SHAHADAT SAHU",
+  "description": "Made By MR JUWEL",
   "main": "Juwel.js",
   "engines": {
     "node": "20.x",
-    "npm": ">=10.0.0 <13.0.0"
+    "npm": ">=10.0.0"
   },
   "scripts": {
     "start": "node Juwel.js",
-    "login": "node login",
-    "test": "node --trace-warnings --use_strict --async-stack-traces mirai"
+    "login": "node login.js",
+    "test": "node --trace-warnings --use_strict --async-stack-traces mirai.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/shahadat-sahu/SHAHADAT-CHAT-BOT.git"
+    "url": "https://github.com/MR-JUWEL-CHAT-BOT2026/MR-JUWEL-CHAT-BOT-2026.git"
   },
   "keywords": [
     "bot",
     "facebook",
-    "shahadatproject",
     "messenger",
     "javascript",
-    "shadat",
-    "ullash",
-    "shahadat sahu",
-    "shahadat chat bot"
+    "mr-juwel",
+    "juwel-chat-bot",
+    "mr-juwel-chat-bot"
   ],
-  "author": "SHAHADAT SAHU",
+  "author": "MR JUWEL",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/shahadat-sahu/SHAHADAT-CHAT-BOT/issues"
+    "url": "https://github.com/MR-JUWEL-CHAT-BOT2026/MR-JUWEL-CHAT-BOT-2026/issues"
   },
-  "homepage": "https://github.com/shahadat-sahu/SHAHADAT-CHAT-BOT/issues",
+  "homepage": "https://github.com/MR-JUWEL-CHAT-BOT2026/MR-JUWEL-CHAT-BOT-2026#readme",
   "dependencies": {
     "@distube/ytdl-core": "^4.13.2",
     "@miraipr0ject/assets": "^1.0.9",
