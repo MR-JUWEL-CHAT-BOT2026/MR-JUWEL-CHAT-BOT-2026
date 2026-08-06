@@ -288,13 +288,6 @@ Please do not disturb the admin unless you have a special need. Thank you!
 
 ---
 
-## ✨🌟 Special Thanks 🌟✨
-
-- 🚀 **Cyber Bot Team**  
-- 🧙‍♂️ **Ullash (Owner Cyber Bot Team)**
-- 🛡️ **Sujon (Admin Cyber Bot Team)**
-- 🎓 **Grandpa EJ (Owner Grandpa Academy)** 
-
 ---
 
 💖 **Thank You For Choosing 𝗝𝘂𝘄𝗲𝗹 𝗖𝗵𝗮𝘁 𝗕𝗼𝘁!**  
