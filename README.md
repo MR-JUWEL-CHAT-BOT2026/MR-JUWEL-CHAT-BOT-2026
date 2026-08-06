@@ -1,122 +1,59 @@
-# ─⃞𝐉𝐔𝐖𝐄𝐋 𝐂𝐇𝐀𝐓 𝐁𝐎𝐓🪽
-### ⚡ Ultra Premium Messenger Automation System
-
----
-
-<!-- HERO ANIMATION -->
+<br />
 <p align="center">
-  <img src="https://readme-typing-svg.herokuapp.com?font=JetBrains+Mono&size=24&duration=2500&pause=1000&color=00A8FF&center=true&vCenter=true&width=650&lines=Welcome+To+JUWEL+CHAT+BOT;Advanced+Messenger+Automation+System;Fast+%7C+Smart+%7C+Secure+%7C+Stable" />
-</p>
-
----
-
-<!-- BANNER -->
-<p align="center">
-  <img src="https://files.catbox.moe/fu54e0.jpg" width="85%" />
-</p>
-
----
-
-<!-- VISITOR -->
-<p align="center">
-  <img src="https://komarev.com/ghpvc/?username=YOURNAME&color=blue" />
-</p>
-
----
-
-# 🚀 PROJECT STATUS
-![Version](https://img.shields.io/badge/version-4.0-blue)
-![Platform](https://img.shields.io/badge/platform-Messenger-black)
-![Status](https://img.shields.io/badge/status-active-success)
-![License](https://img.shields.io/badge/license-MIT-green)
-![Uptime](https://img.shields.io/badge/uptime-24%2F7-success)
-![Node](https://img.shields.io/badge/node.js-powered-yellow)
-
----
-
-# 📊 GITHUB STATS
-![Stats](https://github-readme-stats.vercel.app/api?username=YOURNAME&show_icons=true&theme=tokyonight)
-
----
-
-# ⚡ LIVE DEPLOY
-
-<p align="center">
-
-<a href="https://heroku.com/deploy">
-<img src="https://www.herokucdn.com/deploy/button.svg" />
+    <a href="https://github.com/Xrahat-Dev/Xrahat-BoT.git">
+        <img src="https://i.postimg.cc/Vsnh7S1c/Xrahat-Dev.jpg" alt="Logo">
+    </a>
+    <p align="center">
+<a href="https://t.me/education_of_purpose" target="_blank">
+  <img src="https://discordhub.net/emojis/cute-dance.gif" width="30">
 </a>
-
-<a href="https://render.com">
-<img src="https://img.shields.io/badge/Deploy%20On-Render-blue?style=for-the-badge&logo=render" />
-</a>
-
-<a href="https://railway.app">
-<img src="https://img.shields.io/badge/Deploy%20On-Railway-purple?style=for-the-badge&logo=railway" />
-</a>
-
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=700&size=52&pause=1000&color=87CEEB&center=true&vCenter=true&width=700&lines=%F0%9F%94%B0+Rahat+BoT+%F0%9F%94%B0" />
 </p>
 
----
+## 📹 𝗦𝗲𝘁𝘂𝗽 𝗧𝘂𝘁𝗼𝗿𝗶𝗮𝗹
 
-# 📌 ABOUT BOT
-
+<br />
 <p align="center">
-  <img src="https://readme-typing-svg.herokuapp.com?font=JetBrains+Mono&size=20&duration=2000&pause=800&color=FF4D4D&center=true&vCenter=true&width=600&lines=Automation+System;Group+%26+Inbox+Control;Smart+AI+Features" />
-</p>
+    <a href="https://tutorial-videoo.vercel.app">
+        <img src="https://i.postimg.cc/CK8Tc1JD/file-000000003a24820b970a23cf88ed719c.png" alt="Logo">
+    </a>
 
-**JUWEL CHAT BOT** একটি advanced Messenger automation system যা group এবং inbox smartভাবে control করে।
+Click thumbnail to watch full tutorial👆🏻
 
----
+<a><img src='https://i.imgur.com/LyHic3i.gif'/></a>
 
-# ✨ FEATURES
-
+<br />
 <p align="center">
-  <img src="https://readme-typing-svg.herokuapp.com?font=JetBrains+Mono&size=18&duration=2000&pause=800&color=00FF88&center=true&vCenter=true&width=600&lines=Auto+Reply+System;Quiz+%26+Games;Economy+System;Admin+Tools;Media+Downloader" />
+    <a href="https://github.com/Xrahat-Dev">
+        <img src="https://i.imgur.com/9pBmbf3.gif" alt="Logo">
+    </a>
 </p>
 
-- 🤖 Auto Reply System  
-- 🎮 Quiz & Games  
-- 💰 Economy (Coins / Gift)  
-- 👥 Group Management  
-- 📥 Media Downloader  
-- ⚡ Fast Response Engine  
 
----
+<div align="center">
 
-# 🐾 ANIMAL POWER SYSTEM
+  <!-- ⭐ Fork -->
+  <img src="https://img.shields.io/github/forks/Xrahat-Dev/Xrahat-BoT?style=for-the-badge" alt="Forks">
 
-<p align="center">
-  <img src="https://readme-typing-svg.herokuapp.com?font=JetBrains+Mono&size=20&duration=2000&pause=800&color=FFAA00&center=true&vCenter=true&width=600&lines=Lion+Mode+Activated;Wolf+Speed+System;Eagle+Vision+Bot;Tiger+Performance+Engine" />
+  <!-- ⭐ Stars -->
+  <img src="https://img.shields.io/github/stars/Xrahat-Dev/Xrahat-BoT?style=for-the-badge" alt="Stars">
+  <a href="https://github.com/Xrahat-Dev/Xrahat-BoT">
+    <img src="https://img.shields.io/badge/ORIGINAL%20REPOSITORY-red?style=for-the-badge&logo=github&logoColor=white" alt="Original Repo">
+  </a>
+
+</div>
+
+<p align="center">  
+  <a href="https://facebook.com/xrahat2"><img src="https://i.postimg.cc/pLHy2CJm/𝐑𝐀𝐇𝐀𝐓-𝐈𝐒𝐋𝐀𝐌.gif" alt="Facebook" width="48"></a>  
+  <a href="https://t.me/education_of_purpose"><img src="https://i.postimg.cc/g0BY6H8Z/𝐑𝐀𝐇𝐀𝐓-𝐈𝐒𝐋𝐀𝐌.gif" alt="Telegram" width="46"></a>  
+  <a href="https://youtube.com/@messenger_bot"><img src="https://i.postimg.cc/dVsvHx90/𝐑𝐀𝐇𝐀𝐓-𝐈𝐒𝐋𝐀𝐌.gif" alt="YouTube" width="60"></a>  
 </p>
-
----
-
-# 🐾 ANIMAL MODES
-
-- 🦁 Lion Mode → Admin Power Control  
-- 🐺 Wolf Mode → Fast Auto Reply  
-- 🦅 Eagle Mode → Smart Detection System  
-- 🐯 Tiger Mode → High Speed Execution  
-- 🐉 Dragon Mode → Ultra AI Power  
-- 🦂 Scorpion Mode → Security Shield  
-
----
-
-# 🧠 COMMANDS
-
-_____
-
-[![License](https://img.shields.io/github/license/shahadat-sahu/SHAHADAT-CHAT-BOT)](https://github.com/shahadat-sahu/JUWEL-CHAT-BOT/blob/main/LICENSE)
-[![GitHub issues](https://img.shields.io/github/issues/shahadat-sahu/SHAHADAT-CHAT-BOT)](https://github.com/shahadat-sahu/JUWEL-CHAT-BOT/issues)
-[![GitHub forks](https://img.shields.io/github/forks/shahadat-sahu/JUWEL-CHAT-BOT)](https://github.com/shahadat-sahu/JUWEL-CHAT-BOT/network)
-[![GitHub stars](https://img.shields.io/github/stars/shahadat-sahu/JUWEL-CHAT-BOT)](https://github.com/shahadat-sahu/JUWEL-CHAT-BOT/stargazers)
-[![Last commit](https://img.shields.io/github/last-commit/shahadat-sahu/SHAHADAT-CHAT-BOT)](https://github.com/shahadat-sahu/JUWEL-CHAT-BOT/commits)
-_______
 
 ### <br>   ❖ DEPLOY_WORKFLOWS ❖
+<a><img       
+src='https://i.imgur.com/LyHic3i.gif'/></a>
 ```
-name: Juwel.js CI
+name: Node.js CI
 
 on:
   push:
@@ -153,162 +90,177 @@ jobs:
         PORT: 8080
       run: npm start
 ```
+<a><img       
+src='https://i.imgur.com/LyHic3i.gif'/></a>
 
-___
+## 📢 𝗝𝗼𝗶𝗻 𝗔𝗹𝗹 𝗖𝗵𝗮𝗻𝗻𝗲𝗹👇
+<a><img       
+src='https://i.imgur.com/LyHgic3i.gif'/></a>
+<p align="center">
+  <a href="https://t.me/rahat_bot_community" target="_blank">
+    <img src="https://i.postimg.cc/g0BY6H8Z/𝐑𝐀𝐇𝐀𝐓-𝐈𝐒𝐋𝐀𝐌.gif" width="120" alt="Fork on GitHub" style="border-radius: 50%;">
+ </a>
+</p>
 
-## HOW TO RUN THIS CHAT BOT 🚀
-
-[![Watch the Video](https://i.imgur.com/EKtftdm.png)](https://youtu.be/blg0O7IgcrA?si=vpz42AK06uIblLN9)
-
-Click the image above to watch the step-by-step tutorial on YouTube.
-
-
-## Steps to Run the Bot
-
-**Start Command**  
-   Navigate to the folder where your bot files are located:
-   ```bash
-   node Juwel.js
+## Render Node👇🏼 
 ```
+Xrahat.js
+```
+<a><img       
+src='https://i.imgur.com/LyHic3i.gif'/></a>
+
+<!-- TABLE OF CONTENTS -->
+<details open="open">
+    <summary>Table of Contents</summary>
+    <ol>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#safety-disclaimer">Safety & Disclaimer</a></li>
+        <li><a href="#license">License</a></li>
+         <li><a href="#contributing">Contributing</a></li> 
+        <li><a href="#credits">Credits</a></li>
+    </ol>
+</details>
+
+<a id="features"></a>
+
+## ✨ Features
+
+This bot is a prefix-based (default `/`) Facebook Messenger bot built on an unofficial Facebook Chat API, with a SQLite-backed database (`includes/database`) for persisting users, threads (groups), and a virtual currency/economy system.
+
+**🛠️ Core / Admin & Moderation**
+- Bot-owner (`ADMINBOT`) and per-group admin roles, with commands to promote/demote, ban/unban users bot-wide or per-group (`ban`, `unban`, `listbanbybot`, `admin`, `Boxadmin`, `listadmin`)
+- Group controls: kick/leave, lock threads, set/change group prefix, approve pending groups, anti-out (stop people from removing the bot or others), anti-join restrictions
+- Bot settings management: `setting`, `setprefix`, `setname`, `setphoto`, `setkey`, `setemoji`, `restart`, `logout`, `vip` mode
+- Remote file/config browser for the bot owner (`includes/dataSync.js`)
+
+**💰 Economy / Games**
+- A virtual-currency wallet system (`balance`, `bank`, `give`, `rob`) backed by `includes/controllers/currencies.js`
+- Casino-style mini-games: `casino`, `slot`, `3card`, `baicao`, `banbaucua`, `banchim`, `bantaixiu`
+- Trivia/word games: `quiz`, `truefalse`, `truthordare`, `typingtest`, `math`/`mathematics`
+
+**🎨 Image / Media Generation**
+- Canvas-based image generators for social interactions: `hug`, `kiss`, `slap`, `punch`, `love`, `married`, `couple`, `pair`, `baby`/`babyimg`/`babylove`, `friend`, `girlfriend`, `bow`, `rip`, `finger`, `latti`, `gaa` (each with several numbered style variants)
+- Profile/photo tools: `pp`, `boypp`, `girlpp`, `cover`/`fbcover`, `setphoto`, `setprofile`, `Caption`, `Cdi` (ID-card generators), `rnamebox`, `Font`, `Emojimix`
+- Utility converters: `convert`, `qr`/`qrscan`, `removebg`, `imgur`, `Catbox`
+
+**🤖 AI / Search / Info**
+- AI chat integration (`Ai.js`, `Gemini.js`, `simsimi`)
+- Lookup tools: `fbsearch`/`fbsearch1`, `translate`/`trans`, `weather`, `ip`, `infosite`, `tid`, `uidx` (Facebook UID/profile lookups), `youtube`, `mp3`
+- `drive` — Google Drive file handling used for things like the `uid` card frame images
+
+**📌 Fun / Text / Misc**
+- Text effects and prank-style commands: `sins`, `zalgo`-style text, `Mention` (tag all members), `Trigger`, `owner`/`owner2`, `intro`, `bio`, `wish` (birthday wishes), `birthday`/`birthdayAuto` (auto birthday detection)
+- `menu`/`help` — auto-generated command list, paginated and prefixed per group
+- Scheduled/automatic events: an Islamic-content poster (`Script/events/Islamic_bot*.js`) that posts on a schedule, and `antiout` event handling
+
+<a id="safety-disclaimer"></a>
+
+<!-- SAFETY & DISCLAIMER -->
+## 🛡️ Safety & Disclaimer
+
+---
+
+### 🔒 Safety Statement
+
+This project has been developed for **entertainment and educational use **.  
+
+It is not built for harassment, bullying, intimidation, impersonation, or targeted abuse.
+
+All image generation and editing features are designed for general, safe, and non-harmful use only.
+
+The project does not intentionally include any harmful content or features designed to attack, shame, or degrade any person or group.
+
+All generated content (including text, images, or automated outputs) must be used responsibly and ethically.
+
+---
+
+### ⚠️ Disclaimer
+
+All users are fully responsible for the content they create and share using this project.  
+
+The maintainer does **not support or permit** any abusive, hateful, violent, or illegal use of this software.  
+
+Any generated content must strictly follow platform policies and applicable laws.
+
+---
+
+### **⚠️ Important Note**
+- Any issues related to 18+, vulgarity, obscenity, pornography, treason, politics, etc., are not allowed in Bot. Adding custom commands or modifying the code to violate these rules will result in a **permanent ban**. Please be cautious with each line of your code.
+<hr>
+
+### 🔧 Remote Control Notice
+
+This project includes a remote control mechanism, used for business and anti-tampering purposes (e.g. protecting the integrity of the bot's in-app economy/currency system across deployments). This is intentional and disclosed here for transparency.
+
+Additionally, a distributor-managed support/admin team (IDs loaded from the remote license list) has full command access on every deployment for support, licensing, and abuse response purposes. These accounts are intentionally hidden from the bot's own `admin list` output.
+
+---
+
+> 💡 Use this project responsibly and ethically.
+
+<!-- LICENSE -->
+## License
+
+This project is licensed under the GNU General Public License v3.0 (GPL-3.0).
+
+See the [LICENSE](LICENSE) file for the full license text.
+
+This project contains modifications of software originally released under GPL-3.0. In accordance with the GPL, the original copyright and license notices are preserved.
+
+<!-- CONTRIBUTING -->
+## Contributing
+
+Sự đóng góp của bạn sẽ khiến cho project ngày càng tốt hơn, các bước để bạn có thể đóng góp
+
+1. Fork project này
+2. Tạo một branch mới chứa tính năng của bạn (`git checkout -b feature/AmazingFeature`)
+3. Commit những gì bạn muốn đóng góp (`git commit -m 'Add some AmazingFeature'`)
+4. Đẩy branch chứa tính năng của bạn lên (`git push origin feature/AmazingFeature`)
+5. Tạo một pull request mới và sự đóng góp của bạn đã sẵn sàng để có thể đóng góp!
+
+## Credits
+
+This repository is a modified/customized version of:
+https://github.com/m1raibot/miraiv2
+
+The original project and license belong to their respective developers.
+I only made modifications and customization for learning purposes.
+
+Full credit goes to the original authors.
 
 
-----
-## 🔥 Features  
+### 🔧 Modified & Helped :
 
-**• Auto Chat**  
-Enjoy automatic and seamless conversations through natural language processing.  
+- **Rx Abdullah** <a href="https://t.me/education_of_purpose" target="_blank"><img src="https://discordhub.net/emojis/success-2.gif" width="16" align="center"></a>
+- **Mohammad Akash** <a href="https://t.me/education_of_purpose" target="_blank"><img src="https://discordhub.net/emojis/success-2.gif" width="16" align="center"></a>
 
-**• Photo Editing**  
-Edit professional quality photos using our advanced commands, no additional apps needed.  
+<a href="https://t.me/education_of_purpose" target="_blank">
+  <img src="https://discordhub.net/emojis/99609-calendar-1.gif" width="22">
+</a><b>Release Date:</b> <code>21/06/2026 at 03:54 (night)</code>
 
-**• Image Generation**  
-Create unique images using our cutting-edge text-to-image technology.  
 
-**• Video Downloader**  
-Download HD videos from YouTube, Facebook, TikTok and other platforms.  
+<a><img       
+src='https://i.imgur.com/LyHic3i.gif'/></a>
 
-**• Interactive Games**  
-Play 20+ fun games directly in messenger, no installation hassle!  
+<div align="center">  
+╭───────────────────────╮  
 
-**• Fun Commands**  
-Surprise your friends with hundreds of fun commands!  
-___
+<p>
+  <a href="https://t.me/education_of_purpose" target="_blank">
+    <img src="https://discordhub.net/emojis/rollingeyees-1.gif" width="22" style="vertical-align:middle;">
+  </a>
+  <b style="vertical-align:middle;">𝗩𝗜𝗘𝗪𝗦</b>
+</p>
 
-<div style="max-width: 500px; margin: auto; font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+<a href="https://t.me/education_of_purpose" target="_blank">
+  <img src="https://discordhub.net/emojis/cute-dance.gif" width="22">
+</a>
 
-  <h2 style="text-align: center; margin-bottom: 30px;">How to Use These Platforms</h2>
+<img src="https://visitor-badge.laobi.icu/badge?page_id=Xrahat-Dev.Xrahat-BoT&left_color=black&right_color=red" height="28">
 
-  <div style="display: flex; align-items: flex-start; margin-bottom: 30px;">
-    <img src="https://img.icons8.com/color/48/000000/replit.png" alt="Replit" style="margin-right: 20px; flex-shrink: 0;" />
-    <div>
-      <h3 style="margin: 0 0 8px;">Replit</h3>
-      <p style="margin: 0;">
-        Replit is an online coding environment that lets you write, run, and test code directly from your browser without any setup.  
-        Simply sign up for a free account, create a new project (called a “Repl”), and start coding in languages like JavaScript, Python, C++, and many more.  
-        It’s perfect for quick prototyping, learning programming, or collaborating with others in real-time.  
-        You can also host simple web apps and share your projects with a public URL instantly.
-      </p>
-    </div>
-  </div>
+<a href="https://t.me/education_of_purpose" target="_blank">
+  <img src="https://discordhub.net/emojis/cute-dance.gif" width="22">
+</a>
 
-  <div style="display: flex; align-items: flex-start; margin-bottom: 30px;">
-    <img src="https://img.icons8.com/fluency/48/000000/cloud.png" alt="Render" style="margin-right: 20px; flex-shrink: 0;" />
-    <div>
-      <h3 style="margin: 0 0 8px;">Render</h3>
-      <p style="margin: 0;">
-        Render is a cloud hosting platform that allows you to deploy websites, APIs, and applications easily without worrying about server management.  
-        After developing your app locally or on Replit, you can push your code to Render for continuous deployment.  
-        It supports popular frameworks, automatic SSL, custom domains, and background workers.  
-        This platform is ideal for developers who want hassle-free hosting with scalable resources.
-      </p>
-    </div>
-  </div>
-
-  <div style="display: flex; align-items: flex-start;">
-    <img src="https://img.icons8.com/fluency/48/000000/github.png" alt="GitHub" style="margin-right: 20px; flex-shrink: 0;" />
-    <div>
-      <h3 style="margin: 0 0 8px;">GitHub</h3>
-      <p style="margin: 0;">
-        GitHub is a web-based platform for version control and collaborative code management using Git.  
-        It lets you store your code repositories securely, track changes, and collaborate with other developers through pull requests and issues.  
-        GitHub also supports project documentation via README files and wikis, and it integrates with many CI/CD tools to automate workflows.  
-        Use GitHub to manage your projects efficiently and share your code with the developer community.
-      </p>
-    </div>
-  </div>
-
+╰───────────────────────╯  
 </div>
-
-
-
-
----
-
-
-
-
-## 👨‍💻 **ABOUT THE DEVELOPER**  
-  
-**Name:** **`JUWEL ISLAM`**  
-**Nice Name:** **`MR JUWEL`**  
-**Profession:** **`STUDENT`**  
-**Location:** **`RANGPUR, BANGLADESH`**  
-
-### 📞 **CONTACT INFORMATION**  
-- **WhatsApp:** **[01943488192](01943488192)**  
-- **Facebook:** **[Facebook ID](fb.com/mrjuwel2025)**  
-- **Messenger:** **[Message Me](mrjuwel2025)**  
-
-### 🚀 **DEVELOPMENT APPROACH**  
-- 💻 **Copy-paste techniques with customizations**  
-- 🤝 **Collaborative development with friends**  
-- 🤖 **AI-powered using ChatGPT and other advanced tools**  
-
-
-
-
----
-
-
-
-
-
-## ❖ SUPPORT  
-If you need any help, you can contact the admin.
-Please do not disturb the admin unless you have a special need. Thank you! 
-
-<p align="center">
-  <a href="https://wa.me/+8801882333052?text=Assalamualaikum%20Admin%20SHAHADAT%20SAHU%20Need%20Help%20Please%20Brother%20🫶">
-    <img alt="WhatsApp" src="https://img.shields.io/badge/WhatsApp-25D366?style=for-the-badge&logo=whatsapp&logoColor=white">
-  </a>
-  <a href="https://m.me/100001039692046">
-    <img alt="Messenger" src="https://img.shields.io/badge/Messenger-00B2FF?style=for-the-badge&logo=messenger&logoColor=white">
-  </a>
-</p>
-
----
-
-## ✨🌟 Special Thanks 🌟✨
-
-- 🚀 **Cyber Bot Team**  
-- 🧙‍♂️ **Ullash (Owner Cyber Bot Team)**
-- 🛡️ **Sujon (Admin Cyber Bot Team)**
-- 🎓 **Grandpa EJ (Owner Grandpa Academy)** 
-
----
-
-💖 **Thank You For Choosing 𝗝𝘂𝘄𝗲𝗹 𝗖𝗵𝗮𝘁 𝗕𝗼𝘁!**  
-🗓️ *Release Date:* `07/11/2025 at 02:00`  
-⭐ **Please don't forget to give a star after forking! It really helps!**
-
----
-
-<p align="center">
-  <a href="https://github.com/shahadat-sahu"><img src="https://img.icons8.com/fluency/48/000000/github.png" alt="GitHub"></a>
-  <a href="https://wa.me/+8801882333052"><img src="https://img.icons8.com/color/48/000000/whatsapp.png" alt="WhatsApp"></a>
-  <a href="https://facebook.com/100001039692046"><img src="https://img.icons8.com/fluency/48/000000/facebook.png" alt="Facebook"></a>
-  <a href="https://t.me/+7RqN73zA6aBiY2U1"><img src="https://img.icons8.com/color/48/000000/telegram-app.png" alt="Telegram"></a>
-  <a href="https://youtube.com/@scb-community"><img src="https://img.icons8.com/color/48/000000/youtube-play.png" alt="YouTube"></a>
-</p>
-
-**I hope you enjoy my fork! Thank you for supporting the cyber chat bot community!**
