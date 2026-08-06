@@ -1,0 +1,124 @@
+const fs = require("fs-extra");
+
+const path = __dirname + "/birthdayData.json";
+const logFile = __dirname + "/birthday.log";
+
+module.exports.config = {
+  name: "autobirthday",
+  version: "5.0.0",
+  hasPermssion: 0,
+  credits: "MR JUWEL",
+  description: "Auto Birthday (10AM countdown + 11:59PM main + persistent)",
+  commandCategory: "system",
+  cooldowns: 5
+};
+
+// ===== INIT =====
+function init() {
+  if (!fs.existsSync(path)) {
+    fs.writeFileSync(path, JSON.stringify({
+      lastMorning: "",
+      lastNight: ""
+    }, null, 2));
+  }
+}
+
+// ===== MAIN =====
+async function checkBirthday(api) {
+  try {
+    init();
+    const data = JSON.parse(fs.readFileSync(path));
+
+    const now = new Date();
+    const today = now.toLocaleDateString("en-CA");
+
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+
+    const birthday = new Date(2026, 3, 24);
+    const diff = Math.ceil((birthday - now) / (1000 * 60 * 60 * 24));
+
+    const threads = await api.getThreadList(100, null, ["INBOX"]);
+    if (!threads) return;
+
+    const link = "fb.com/mrjuwel999";
+
+    // ================= MORNING (10:00 AM) =================
+    if (hours === 10 && minutes === 0) {
+
+      // 15 → 23 April only
+      if (diff >= 1 && diff <= 9 && data.lastMorning !== today) {
+
+        const msg =
+`⁽────⁽𝐌𝐑₎────₎
+╔════ཐི༏ཋྀ════╗
+━〲🅙𝐔🅦𝐄🅛⤸⃞🩷࿐ এর বার্ডে আসতেছে আর বাকি *${diff} দিন*!
+🎁 সবাই উইশ করার জন্য রেডি থাকেন! 🥳
+${link}`;
+
+        for (const t of threads) {
+          await api.sendMessage(msg, t.threadID);
+        }
+
+        data.lastMorning = today;
+        fs.writeFileSync(path, JSON.stringify(data, null, 2));
+        fs.appendFileSync(logFile, `[${today}] Morning Sent\n`);
+        console.log("Morning message sent");
+      }
+    }
+
+    // ================= NIGHT (11:59 PM on 23 April) =================
+    if (hours === 23 && minutes === 59) {
+
+      const is23April =
+        now.getDate() === 23 &&
+        now.getMonth() === 3 &&
+        now.getFullYear() === 2026;
+
+      if (is23April && data.lastNight !== today) {
+
+        const msg =
+`🎉 আজ 𝑴𝑹 𝑱𝑼𝑾𝑬𝑳 এর জন্মদিন! 🎂
+
+🎂ღ𝑯𝒂𝒑𝒑𝒚 𝑩𝒊𝒓𝒕𝒉𝒅𝒂𝒚 𝑻𝒐𝒐 𝒀𝒐𝒖 𝑱𝒖𝒘𝒆𝒍🥳
+
+জন্মদিনের শুভেচ্ছা ও ভালোবাসা রইলো❤᭄
+“-༎আজকের༎এই༎দিন༎🍂🥀༊༅তোমার༅জন্য༅অনেক💞!!🤗༊༅ সুখময়༎নতুন༎এক༅প্রভাত༎🥰🥀🖤༎ আজকের༎এইদিন༎তোমার༅জন্য༎হোক༎কষ্টহীন🦋🤗💞༊༅ আজকের༎এই༅সময়টা༅🌺🍁😽༎শুধু༎তোমার༎জন্য😽🌈 তোমার༎জন্য༎আজ༎পৃথিবীটা༎হয়ে যাক༎রঙিন🌈🤗
+
+আমারツ এর পক্ষ থেকে༆ツ
+🎊𝐇𝐀𝐏𝐏𝐘 𝐁𝐈𝐑𝐓𝐇𝐃𝐀𝐘 🎉
+
+⁽────⁽𝐌𝐑₎────₎
+╔════ཐི༏ཋྀ════╗
+━〲🅙𝐔🅦𝐄🅛⤸⃞🩷࿐
+💚ღ𝑴𝒂𝒏𝒚 𝑴𝒂𝒏𝒚 𝑯𝒂𝒑𝒑𝒚 𝑹𝒆𝒕𝒖𝒓𝒏 𝑶𝒇𝒇 𝑻𝒉𝒆 𝑫𝒂𝒚 𝑱𝒖𝒘𝒆𝒍ღ`;
+
+        for (const t of threads) {
+          await api.sendMessage(msg, t.threadID);
+        }
+
+        data.lastNight = today;
+        fs.writeFileSync(path, JSON.stringify(data, null, 2));
+        fs.appendFileSync(logFile, `[${today}] Night Sent\n`);
+        console.log("Night message sent");
+      }
+    }
+
+  } catch (e) {
+    console.log("Birthday error:", e);
+  }
+}
+
+// ===== AUTO LOOP =====
+module.exports.handleEvent = async function ({ api }) {
+  if (!global.birthdayLoop) {
+    global.birthdayLoop = setInterval(() => {
+      checkBirthday(api);
+    }, 60 * 1000);
+  }
+};
+
+// ===== COMMAND =====
+module.exports.run = async function ({ api, event }) {
+  return api.sendMessage("✅ Birthday system running...", event.threadID);
+};
