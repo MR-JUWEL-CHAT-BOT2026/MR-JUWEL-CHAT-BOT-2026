@@ -35,7 +35,7 @@
 ---
 
 # 📊 GITHUB STATS
-![Stats](https://github-readme-stats.vercel.app/api?username=YOURNAME&show_icons=true&theme=tokyonight)
+![Stats](https://github-readme-stats.vercel.app/api?username=YOURNAME&show_icons=true&theme=tokyonight)theme&them
 
 ---
 
@@ -107,7 +107,7 @@
 
 _____
 
-[![License](https://img.shields.io/github/license/shahadat-sahu/SHAHADAT-CHAT-BOT)](https://github.com/shahadat-sahu/JUWEL-CHAT-BOT/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/shahadat-sahu/SHAHADAT-CHAT-BOT)](https://github.com/MR-JUWEL-CHAT-BOT2026/MR-JUWEL-CHAT-BOT2026/blob/main/LICENSE)
 [![GitHub issues](https://img.shields.io/github/issues/shahadat-sahu/SHAHADAT-CHAT-BOT)](https://github.com/shahadat-sahu/JUWEL-CHAT-BOT/issues)
 [![GitHub forks](https://img.shields.io/github/forks/shahadat-sahu/JUWEL-CHAT-BOT)](https://github.com/shahadat-sahu/JUWEL-CHAT-BOT/network)
 [![GitHub stars](https://img.shields.io/github/stars/shahadat-sahu/JUWEL-CHAT-BOT)](https://github.com/shahadat-sahu/JUWEL-CHAT-BOT/stargazers)
@@ -255,9 +255,9 @@ ___
 **Location:** **`RANGPUR, BANGLADESH`**  
 
 ### 📞 **CONTACT INFORMATION**  
-- **WhatsApp:** **[01943488192](01943488192)**  
-- **Facebook:** **[Facebook ID](fb.com/mrjuwel2025)**  
-- **Messenger:** **[Message Me](mrjuwel2025)**  
+- **WhatsApp:** **[+8801943488192](+8801943488192)**  
+- **Facebook:** **[Facebook ID](fb.com/mrjuwel520)**  
+- **Messenger:** **[Message Me](mrjuwel520)**  
 
 ### 🚀 **DEVELOPMENT APPROACH**  
 - 💻 **Copy-paste techniques with customizations**  
@@ -278,10 +278,10 @@ If you need any help, you can contact the admin.
 Please do not disturb the admin unless you have a special need. Thank you! 
 
 <p align="center">
-  <a href="https://wa.me/+8801882333052?text=Assalamualaikum%20Admin%20SHAHADAT%20SAHU%20Need%20Help%20Please%20Brother%20🫶">
+  <a href="https://wa.me/+8801882333052?text=Assalamualaikum%20Admin%20MR%20JUWEL%20Need%20Help%20Please%20Brother%20🫶">
     <img alt="WhatsApp" src="https://img.shields.io/badge/WhatsApp-25D366?style=for-the-badge&logo=whatsapp&logoColor=white">
   </a>
-  <a href="https://m.me/100001039692046">
+  <a href="https://m.me/61592716197470">
     <img alt="Messenger" src="https://img.shields.io/badge/Messenger-00B2FF?style=for-the-badge&logo=messenger&logoColor=white">
   </a>
 </p>
@@ -297,9 +297,9 @@ Please do not disturb the admin unless you have a special need. Thank you!
 ---
 
 <p align="center">
-  <a href="https://github.com/shahadat-sahu"><img src="https://img.icons8.com/fluency/48/000000/github.png" alt="GitHub"></a>
-  <a href="https://wa.me/+8801882333052"><img src="https://img.icons8.com/color/48/000000/whatsapp.png" alt="WhatsApp"></a>
-  <a href="https://facebook.com/100001039692046"><img src="https://img.icons8.com/fluency/48/000000/facebook.png" alt="Facebook"></a>
+  <a href="https://github.com/MR-JUWEL-CHAT-BOT2026/MR-JUWEL-CHAT-BOT-2026.git"><img src="https://img.icons8.com/fluency/48/000000/github.png" alt="GitHub"></a>
+  <a href="https://wa.me/+8801943488192"><img src="https://img.icons8.com/color/48/000000/whatsapp.png" alt="WhatsApp"></a>
+  <a href="https://facebook.com/61592716197470"><img src="https://img.icons8.com/fluency/48/000000/facebook.png" alt="Facebook"></a>
   <a href="https://t.me/+7RqN73zA6aBiY2U1"><img src="https://img.icons8.com/color/48/000000/telegram-app.png" alt="Telegram"></a>
   <a href="https://youtube.com/@scb-community"><img src="https://img.icons8.com/color/48/000000/youtube-play.png" alt="YouTube"></a>
 </p>
