@@ -35,7 +35,7 @@
 ---
 
 # 📊 GITHUB STATS
-![Stats](https://github-readme-stats.vercel.app/api?username=YOURNAME&show_icons=true&theme=tokyonight)theme&them
+![Stats](https://github-readme-stats.vercel.app/api?MR-JUWEL-CHAT-BOT2026=MR-JUWEL-CHAT-BOT2026&show_icons=true&theme=tokyonight)theme&them
 
 ---
 
