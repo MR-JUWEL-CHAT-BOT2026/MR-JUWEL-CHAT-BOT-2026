@@ -1,9 +1,0 @@
-# Ensures Railway's build installs fontconfig + a base font set so the
-# native `canvas` package can initialize Cairo/Pango properly.
-# Without this, node-canvas commonly fails with:
-#   "Fontconfig error: Cannot load default config file"
-[phases.setup]
-nixPkgs = ["...", "fontconfig", "freetype", "cairo", "pango", "pixman", "libjpeg", "giflib", "librsvg"]
-
-[variables]
-FONTCONFIG_PATH = "/etc/fonts"
