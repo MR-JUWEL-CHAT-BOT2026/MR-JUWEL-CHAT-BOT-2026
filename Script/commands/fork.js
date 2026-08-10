@@ -1,22 +1,48 @@
 module.exports.config = {
-    name: "fork",
-    version: "1.0.1",
-    hasPermssion: 0,
-    credits: "SHAHADAT SAHU",
-    description: "Send YouTube channel and GitHub fork link with intro text",
-    commandCategory: "other",
-    usages: "fork",
-    cooldowns: 0,
+ name: "fork",
+ version: "2.0.4",
+ hasPermssion: 0,
+ credits: "乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐",
+ description: "Stable fork system",
+ commandCategory: "other",
+ usages: "fork",
+ cooldowns: 3,
 };
 
-module.exports.run = async function({ api, event }) {
-    const message = 
-        "🌟 আসসালামু আলাইকুম সম্মানিত বট ইউজার 🌟\n\n" +
-        "আপনি যদি তৈরি করতে চান, তাহলে চলে যেতে পারেন আমাদের ইউটিউব চ্যানেলে। " +
-        "সেখানে গিয়ে ভিডিও দেখে আপনি খুব সহজে বট তৈরি করে নিতে পারবেন। " +
-        "তাহলে আর দেরি না করে এখনি চলে যান আমাদের ইউটিউব চ্যানেলে।\n\n" +
-        "➤ YouTube Channel: https://youtube.com/@scb-community\n\n" +
-        "🔗 GitHub Fork Link: https://github.com/shahadat-sahu/SHAHADAT-CHAT-BOT";
+const fs = require("fs-extra");
+const axios = require("axios");
 
-    return api.sendMessage(message, event.threadID, event.messageID);
+module.exports.run = async function({ api, event }) {
+
+ const repo = "MR-JUWEL-CHAT-BOT2026/MR-JUWEL-CHAT-BOT-2026";
+ const repoLink = `https://github.com/${repo}`;
+
+ const msg = `
+━━━━━━━━━━━━━━━━━━━━━━
+乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐
+𝗕𝗢𝗦𝗦 𝗔𝗥 𝗙𝗢𝗥𝗞 𝗟𝗶𝗡𝗞
+━━━━━━━━━━━━━━━━━━━━━━
+
+📌 Repo: ${repoLink}
+
+━━━━━━━━━━━━━━━━━━━━━━
+𝗠𝗥 𝗝𝗨𝗪𝗘𝗟 𝗖𝗛𝗔𝗧 𝗕𝗢𝗧
+━━━━━━━━━━━━━━━━━━━━━━
+`;
+
+ const imageUrl = "https://i.postimg.cc/3J9mQk5V/banner.jpg";
+ const path = __dirname + "/cache/fork.jpg";
+
+ try {
+ const img = await axios.get(imageUrl, { responseType: "arraybuffer" });
+ fs.writeFileSync(path, Buffer.from(img.data));
+
+ return api.sendMessage({
+ body: msg,
+ attachment: fs.createReadStream(path)
+ }, event.threadID, () => fs.unlinkSync(path), event.messageID);
+
+ } catch (e) {
+ return api.sendMessage(msg, event.threadID, event.messageID);
+ }
 };
