@@ -1,1 +1,172 @@
-const _0x2e090f=_0x1204;(function(_0x2b7be7,_0x1a99ed){const _0x28d2c9=_0x1204,_0x154c6b=_0x2b7be7();while(!![]){try{const _0x435efb=-parseInt(_0x28d2c9(0x134))/0x1+-parseInt(_0x28d2c9(0x12b))/0x2+parseInt(_0x28d2c9(0x144))/0x3+-parseInt(_0x28d2c9(0x137))/0x4+parseInt(_0x28d2c9(0x138))/0x5+-parseInt(_0x28d2c9(0x13c))/0x6+-parseInt(_0x28d2c9(0x131))/0x7*(-parseInt(_0x28d2c9(0x13b))/0x8);if(_0x435efb===_0x1a99ed)break;else _0x154c6b['push'](_0x154c6b['shift']());}catch(_0x48b087){_0x154c6b['push'](_0x154c6b['shift']());}}}(_0xcdcc,0xdc861));const fs=require(_0x2e090f(0x13a)),pathFile=__dirname+_0x2e090f(0x124);function _0x1204(_0xcb9d69,_0x52f842){const _0xcdcc35=_0xcdcc();return _0x1204=function(_0x1204e0,_0xb97b23){_0x1204e0=_0x1204e0-0x124;let _0x42ad38=_0xcdcc35[_0x1204e0];return _0x42ad38;},_0x1204(_0xcb9d69,_0x52f842);}if(!fs[_0x2e090f(0x141)](pathFile))fs['writeFileSync'](pathFile,_0x2e090f(0x143));module[_0x2e090f(0x13f)][_0x2e090f(0x12f)]={'name':_0x2e090f(0x126),'version':_0x2e090f(0x132),'hasPermssion':0x2,'credits':'𝐏𝐫𝐢𝐲𝐚𝐧𝐬𝐡\x20𝐑𝐚𝐣𝐩𝐮𝐭','description':_0x2e090f(0x135),'commandCategory':_0x2e090f(0x13d),'usages':_0x2e090f(0x130),'cooldowns':0x5},module['exports']['handleEvent']=async({api:_0x4d275c,event:_0x48456e,args:_0x5c7f33})=>{const _0x981e34=_0x2e090f,_0x292c3b=fs[_0x981e34(0x125)](pathFile,'utf-8');if(_0x292c3b==_0x981e34(0x133))_0x4d275c[_0x981e34(0x139)](()=>{});},module['exports'][_0x2e090f(0x146)]=async({api:_0x187810,event:_0x5d637,args:_0x2d79a7})=>{const _0x4fcf71=_0x2e090f;try{if(_0x2d79a7[0x0]=='on')fs[_0x4fcf71(0x127)](pathFile,_0x4fcf71(0x133)),_0x187810[_0x4fcf71(0x12a)](this[_0x4fcf71(0x12f)][_0x4fcf71(0x145)]+_0x4fcf71(0x136),_0x5d637['threadID'],_0x5d637[_0x4fcf71(0x140)]);else _0x2d79a7[0x0]==_0x4fcf71(0x13e)?(fs[_0x4fcf71(0x127)](pathFile,'false'),_0x187810['sendMessage'](this[_0x4fcf71(0x12f)][_0x4fcf71(0x145)]+_0x4fcf71(0x12d),_0x5d637[_0x4fcf71(0x12c)],_0x5d637[_0x4fcf71(0x140)])):_0x187810['sendMessage'](_0x4fcf71(0x142)+global[_0x4fcf71(0x12f)][_0x4fcf71(0x129)]+this[_0x4fcf71(0x12f)][_0x4fcf71(0x145)]+'\x20'+this[_0x4fcf71(0x12f)][_0x4fcf71(0x128)],_0x5d637[_0x4fcf71(0x12c)],_0x5d637[_0x4fcf71(0x140)]);}catch(_0x31fa7e){console[_0x4fcf71(0x12e)](_0x31fa7e);}};function _0xcdcc(){const _0x23ebc6=['on/off','5453VyzxCv','1.0.0','true','1160828XWgzVs','Auto\x20seen','\x20turn\x20on\x20successfully.','5952016EcuIjn','5239690sIeOlM','markAsReadAll','fs-extra','39112FDUOfo','7371108kwngOw','tools','off','exports','messageID','existsSync','Wrong\x20format\x0aUse\x20','false','2323053dklQuS','name','run','/cache/autoseen.txt','readFileSync','autoseen','writeFileSync','usages','PEFIX','sendMessage','1700410jMePMC','threadID','\x20turn\x20off\x20successfully','log','config'];_0xcdcc=function(){return _0x23ebc6;};return _0xcdcc();}
+const fs = require("fs-extra");
+const path = require("path");
+
+const cacheDir = path.join(__dirname, "cache");
+const dataFile = path.join(cacheDir, "autoseen.json");
+
+if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir, { recursive: true });
+
+if (!fs.existsSync(dataFile)) {
+    fs.writeJsonSync(dataFile, { status: false, expiry: null }, { spaces: 2 });
+}
+
+let lastRun = 0;
+let dataCache = null;
+
+module.exports.config = {
+    name: "autoseen",
+    version: "3.0.0",
+    hasPermssion: 1,
+    credits: "MR JUWEL",
+    description: "Auto Seen with timer (Bangla notices)",
+    commandCategory: "tools",
+    usages: "on / on 10m / off",
+    cooldowns: 3
+};
+
+// ---------- Data read/write ----------
+function getData() {
+    try {
+        if (dataCache) return dataCache;
+        const data = fs.readJsonSync(dataFile);
+        if (data.expiry === undefined) data.expiry = null;
+        dataCache = data;
+        return data;
+    } catch {
+        return { status: false, expiry: null };
+    }
+}
+
+function setData(status, expiry) {
+    dataCache = { status, expiry };
+    fs.writeJsonSync(dataFile, { status, expiry }, { spaces: 2 });
+}
+
+function getStatus() {
+    return getData().status;
+}
+
+// ---------- Expiry checker (every 10 sec) ----------
+function checkExpiry() {
+    const data = getData();
+    if (data.status && data.expiry && Date.now() > data.expiry) {
+        setData(false, null);
+        console.log("⏰ AutoSeen expired, turned OFF");
+    }
+}
+setInterval(checkExpiry, 10000);
+
+// ---------- Beautiful frame (Bangla text inside) ----------
+function buildFrame(title, lines) {
+    const width = 44;
+    const top = "╔" + "═".repeat(width - 2) + "╗";
+    const bottom = "╚" + "═".repeat(width - 2) + "╝";
+    const mid = (text) => {
+        const pad = width - 4 - text.length;
+        const left = Math.floor(pad / 2);
+        const right = pad - left;
+        return "║ " + " ".repeat(left) + text + " ".repeat(right) + " ║";
+    };
+    let msg = top + "\n";
+    msg += mid("「 " + title + " 」") + "\n";
+    for (const line of lines) {
+        msg += mid(line) + "\n";
+    }
+    msg += bottom;
+    return msg;
+}
+
+// ---------- Event handler (AutoSeen) ----------
+module.exports.handleEvent = async ({ api }) => {
+    try {
+        if (!getStatus()) return;
+
+        const now = Date.now();
+        if (now - lastRun < 5000) return;
+        lastRun = now;
+
+        await api.markAsReadAll();
+    } catch (e) {
+        console.log("AutoSeen Error:", e);
+    }
+};
+
+// ---------- Command handler ----------
+module.exports.run = async ({ api, event, args }) => {
+    const cmd = (args[0] || "").toLowerCase();
+
+    // ========== ON ==========
+    if (cmd === "on") {
+        let expiry = null;
+        let timeText = "";
+        const timeArg = args[1];
+
+        if (timeArg) {
+            const match = timeArg.match(/^(\d+)([smh])$/);
+            if (!match) {
+                return api.sendMessage(
+                    "❌ ভুল ফরম্যাট। ব্যবহার করুন: on 10s, on 5m, on 2h",
+                    event.threadID,
+                    event.messageID
+                );
+            }
+            const num = parseInt(match[1]);
+            const unit = match[2];
+            let ms = 0;
+            if (unit === 's') ms = num * 1000;
+            else if (unit === 'm') ms = num * 60 * 1000;
+            else if (unit === 'h') ms = num * 60 * 60 * 1000;
+            expiry = Date.now() + ms;
+
+            if (unit === 's') timeText = num + " সেকেন্ড";
+            else if (unit === 'm') timeText = num + " মিনিট";
+            else if (unit === 'h') timeText = num + " ঘণ্টা";
+        }
+
+        setData(true, expiry);
+
+        let lines = ["✅ অটোসিন: চালু"];
+        if (expiry) {
+            const remaining = Math.floor((expiry - Date.now()) / 1000);
+            const mins = Math.floor(remaining / 60);
+            const secs = remaining % 60;
+            lines.push(`⏳ বন্ধ হবে ${mins}মি ${secs}সে পরে`);
+        } else {
+            lines.push("♾️ স্থায়ী মোড (যতক্ষণ না অফ করা হয়)");
+        }
+        const frame = buildFrame("অটোসিন চালু", lines);
+        return api.sendMessage(frame, event.threadID, event.messageID);
+    }
+
+    // ========== OFF ==========
+    if (cmd === "off") {
+        setData(false, null);
+        const frame = buildFrame("অটোসিন বন্ধ", [
+            "❌ স্ট্যাটাস: বন্ধ",
+            "অটোসিন নিষ্ক্রিয় করা হয়েছে"
+        ]);
+        return api.sendMessage(frame, event.threadID, event.messageID);
+    }
+
+    // ========== STATUS (default) ==========
+    const data = getData();
+    const statusText = data.status ? "চালু ✅" : "বন্ধ ❌";
+    let lines = ["স্ট্যাটাস: " + statusText];
+    if (data.status && data.expiry) {
+        const remaining = Math.floor((data.expiry - Date.now()) / 1000);
+        if (remaining > 0) {
+            const mins = Math.floor(remaining / 60);
+            const secs = remaining % 60;
+            lines.push(`⏳ বন্ধ হবে ${mins}মি ${secs}সে পরে`);
+        } else {
+            lines.push("⏳ সময় শেষ (শীঘ্রই বন্ধ হবে)");
+        }
+    } else if (data.status && !data.expiry) {
+        lines.push("♾️ স্থায়ী মোড");
+    }
+    lines.push("টাইপ করুন: on (স্থায়ী)");
+    lines.push("অথবা: on 10m (নির্দিষ্ট সময়)");
+    lines.push("অথবা: off (বন্ধ)");
+    const frame = buildFrame("অটোসিন স্ট্যাটাস", lines);
+    return api.sendMessage(frame, event.threadID, event.messageID);
+};
