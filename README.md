@@ -94,7 +94,7 @@
 
 # 🐾 ANIMAL MODES
 
-- 🦁 Lion Mode → Admin Power Control  
+- 🦁 Lion Mode,→ Admin Power Control  
 - 🐺 Wolf Mode → Fast Auto Reply  
 - 🦅 Eagle Mode → Smart Detection System  
 - 🐯 Tiger Mode → High Speed Execution  
