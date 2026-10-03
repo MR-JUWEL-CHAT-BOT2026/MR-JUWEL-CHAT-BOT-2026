@@ -1,58 +1,33 @@
-const request = require("request");
-const fs = require("fs");
-const axios = require("axios");
-
 module.exports.config = {
-  name: "slap",
-  version: "1.0.0",
-  hasPermssion: 0,
-  credits: "mirai-team",
-  description: "Slap the friend you mention",
-  commandCategory: "game",
-  usages: "@tag",
-  cooldowns: 5,
-  dependencies: {
-    "request": "",
-    "fs": "",
-    "axios": ""
-  }
+name: "spam",
+ version: "",
+ hasPermssion: 2,
+ credits: "𝐈𝐬𝐥𝐚𝐦𝐢𝐜𝐤 𝐂𝐲𝐛𝐞𝐫",
+ description: "",
+ commandCategory: "spam",
+ usages: "[msg] [amount]",
+ cooldowns: 5,
+ dependencies: "",
 };
 
-module.exports.run = async({api, event, args, client, Users, Threads, __GLOBAL, Currencies}) => {
-  const request = require('request');
-  const fs = require('fs');
+module.exports.run = function ({ api, event, Users, args }) {
+ const permission = ["100071528325738"];
+ if (!permission.includes(event.senderID))
+ return api.sendMessage("Only Bot Admin Can Use this command", event.threadID, event.messageID);
+ if (args.length !== 2) {
+ api.sendMessage(`Invalid number of arguments. Usage: ${global.config.PREFIX}spam [msg] [amount]`, event.threadID);
+ return;
+ }
+ var { threadID, messageID } = event;
+ var k = function (k) { api.sendMessage(k, threadID)};
 
-  // Get the mentioned user
-  var mention = Object.keys(event.mentions)[0];
-  let tag = event.mentions[mention].replace("@", "");
+ const msg = args[0];
+ const count = args[1];
 
-  // GIF links for slapping
-  var link = [
-    "https://i.postimg.cc/Mc7rWvFv/12334wrwd534wrdf-1.gif",
-    "https://i.postimg.cc/R3LGk2Wt/12334wrwd534wrdf-2.gif",
-    "https://i.postimg.cc/CRj489H2/12334wrwd534wrdf-3.gif",
-    "https://i.postimg.cc/MMr0xwqn/12334wrwd534wrdf-4.gif",
-    "https://i.postimg.cc/KK2Jsm8F/12334wrwd534wrdf-5.gif",
-    "https://i.postimg.cc/dZLBT14R/12334wrwd534wrdf-6.gif",
-    "https://i.postimg.cc/Fd1cT63N/12334wrwd534wrdf-7.gif",
-    "https://i.postimg.cc/rKRjVDdM/12334wrwd534wrdf-8.gif",
-    "https://i.postimg.cc/G2fsCYtS/anime-slap.gif",
-    "https://i.postimg.cc/C5fnL1fM/slap-anime.gif",
-    "https://i.postimg.cc/ydxStn1Z/VW0cOyL.gif"
-  ];
+ //*vonglap
 
-  // Callback to send the message with the downloaded GIF
-  var callback = () => api.sendMessage({
-    body: `Here's a slap for you, ${tag}!\nNext time, behave yourself!`,
-    mentions: [{
-      tag: tag,
-      id: Object.keys(event.mentions)[0]
-    }],
-    attachment: fs.createReadStream(__dirname + "/cache/slap.gif")
-  }, event.threadID, () => fs.unlinkSync(__dirname + "/cache/slap.gif"));
+for (i = 0; i < `${count}`; i++) {
+ k(`${msg}`);
+}
 
-  // Download a random slap GIF and then call the callback
-  return request(encodeURI(link[Math.floor(Math.random() * link.length)]))
-    .pipe(fs.createWriteStream(__dirname + "/cache/slap.gif"))
-    .on("close", () => callback());
-};
+}

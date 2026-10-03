@@ -39,10 +39,6 @@ function loadBan() {
     
     global.data.userBanned.clear();
     for (let id in data) {
-      // শুধু মেয়াদ উত্তীর্ণ নয় এমন ডেটা লোড করুন
-      if (data[id].expire && Date.now() > data[id].expire) {
-        continue; // মেয়াদ উত্তীর্ণ skip
-      }
       global.data.userBanned.set(id, data[id]);
     }
 
@@ -64,24 +60,6 @@ function saveBan() {
   } catch (error) {
     console.error("❌ ব্যান ডেটা সেভে ত্রুটি:", error);
   }
-}
-
-// =========================
-// হেল্পার ফাংশন
-// =========================
-function getTimeRemaining(expireTime) {
-  const now = Date.now();
-  const diff = expireTime - now;
-  
-  if (diff <= 0) return "মেয়াদ শেষ";
-  
-  const days = Math.floor(diff / (24 * 60 * 60 * 1000));
-  const hours = Math.floor((diff % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
-  const minutes = Math.floor((diff % (60 * 60 * 1000)) / (60 * 1000));
-  
-  if (days > 0) return `${days}দিন ${hours}ঘন্টা`;
-  if (hours > 0) return `${hours}ঘন্টা ${minutes}মিনিট`;
-  return `${minutes}মিনিট`;
 }
 
 // =========================
@@ -111,28 +89,6 @@ module.exports.handleEvent = async ({ event, api }) => {
   const banData = global.data.userBanned.get(senderID);
   if (!banData) return;
 
-  // মেয়াদ শেষ চেক
-  if (banData.expire && Date.now() > banData.expire) {
-    // ইউজারের নাম বের করুন
-    let userName = banData.userName || "অজানা";
-    try {
-      const userInfo = await api.getUserInfo(senderID);
-      if (userInfo && userInfo[senderID]) {
-        userName = userInfo[senderID].name || banData.userName || "অজানা";
-      }
-    } catch (error) {
-      console.error("ইউজারের নাম বের করতে সমস্যা:", error);
-    }
-    
-    global.data.userBanned.delete(senderID);
-    saveBan();
-    
-    return api.sendMessage(
-      `🟢 ${userName} এর ব্যান মেয়াদ শেষ হয়েছে!\n✅ এখন থেকে মেসেজ পাঠাতে পারবেন।`,
-      threadID
-    );
-  }
-
   // ইউজারের নাম বের করুন
   let userName = banData.userName || "অজানা";
   try {
@@ -144,15 +100,8 @@ module.exports.handleEvent = async ({ event, api }) => {
     console.error("ইউজারের নাম বের করতে সমস্যা:", error);
   }
 
-  // বাকি সময় দেখান
-  let timeMsg = "";
-  if (banData.expire) {
-    const remaining = getTimeRemaining(banData.expire);
-    timeMsg = `\n⏳ বাকি: ${remaining}`;
-  }
-
   return api.sendMessage(
-    `⛔ ${userName}, আপনি ব্যান করা আছেন!\n📝 কারণ: ${banData.reason}${timeMsg}\n👮 ব্যান করেছেন: ${banData.byName || "অজানা"}`,
+    `⛔ ${userName}, আপনি ব্যান করা আছেন!\n📝 কারণ: ${banData.reason}\n👮 ব্যান করেছেন: ${banData.byName || "অজানা"}\n♾️ স্থায়ী ব্যান`,
     threadID
   );
 };
@@ -183,20 +132,26 @@ module.exports.run = async ({ event, api, args }) => {
   } 
   // ৩. আর্গুমেন্ট থেকে UID বের করুন
   else if (args.length > 0) {
-    // চেক করুন args[0] টাইম কিনা
+    // চেক করুন args[0] টাইম কিনা (এখন টাইম চেক করব না)
     if (/^(\d+)([mhd])$/.test(args[0])) {
-      return api.sendMessage(
-        "⚠️ দয়া করে UID দিন অথবা @মেনশন করুন\n\n" +
-        "উদাহরণ:\n" +
-        "➜ /ban @user 9m স্প্যাম\n" +
-        "➜ /ban 123456789 9m স্প্যাম\n" +
-        "➜ রিপ্লাই করে /ban 9m কারণ",
-        threadID,
-        messageID
-      );
+      // টাইম প্যারামিটার এড়িয়ে যান
+      if (args.length > 1) {
+        targetID = args[1]; // UID হিসেবে ধরুন
+        startIdx = 3; // UID, টাইম, কারণ
+      } else {
+        return api.sendMessage(
+          "⚠️ দয়া করে UID দিন অথবা @মেনশন করুন\n\n" +
+          "উদাহরণ:\n" +
+          "➜ /ban @user স্প্যাম\n" +
+          "➜ /ban 123456789 স্প্যাম\n" +
+          "➜ রিপ্লাই করে /ban কারণ",
+          threadID,
+          messageID
+        );
+      }
     } else {
       targetID = args[0];
-      startIdx = 2;
+      startIdx = 1;
     }
   }
 
@@ -219,12 +174,9 @@ module.exports.run = async ({ event, api, args }) => {
     // আগে থেকেই ব্যান কিনা চেক
     if (global.data.userBanned.has(targetID)) {
       const existing = global.data.userBanned.get(targetID);
-      const timeLeft = existing.expire ? 
-        `\n⏳ বাকি: ${getTimeRemaining(existing.expire)}` : 
-        "\n♾️ স্থায়ী";
       
       return api.sendMessage(
-        `⚠️ ইতিমধ্যেই ব্যান করা!\n📝 কারণ: ${existing.reason}${timeLeft}`,
+        `⚠️ ইতিমধ্যেই ব্যান করা!\n📝 কারণ: ${existing.reason}\n♾️ স্থায়ী ব্যান`,
         threadID,
         messageID
       );
@@ -241,30 +193,12 @@ module.exports.run = async ({ event, api, args }) => {
       console.error("ইউজারের নাম বের করতে সমস্যা:", error);
     }
 
-    // সময় এবং কারণ পার্স
-    let time = null;
+    // কারণ পার্স (টাইম প্যারামিটার এড়িয়ে যান)
     let reason = "";
-    let expire = null;
-    let timeDisplay = "স্থায়ী";
-
+    
     // চেক করুন args[startIdx] টাইম কিনা
     if (args[startIdx] && /^(\d+)([mhd])$/.test(args[startIdx])) {
-      time = args[startIdx];
-      const match = time.match(/^(\d+)([mhd])$/);
-      const value = parseInt(match[1]);
-      const unit = match[2];
-      
-      if (unit === 'm') {
-        expire = Date.now() + (value * 60 * 1000);
-        timeDisplay = `${value} মিনিট`;
-      } else if (unit === 'h') {
-        expire = Date.now() + (value * 60 * 60 * 1000);
-        timeDisplay = `${value} ঘন্টা`;
-      } else if (unit === 'd') {
-        expire = Date.now() + (value * 24 * 60 * 60 * 1000);
-        timeDisplay = `${value} দিন`;
-      }
-      
+      // টাইম প্যারামিটার উপেক্ষা করুন
       reason = args.slice(startIdx + 1).join(" ") || "কারণ উল্লেখ নেই";
     } else {
       reason = args.slice(startIdx).join(" ") || "কারণ উল্লেখ নেই";
@@ -273,7 +207,6 @@ module.exports.run = async ({ event, api, args }) => {
     // ব্যান ডেটা সেভ (নাম সহ)
     const banInfo = {
       reason: reason,
-      expire: expire,
       by: event.senderID,
       byName: "অজানা",
       time: Date.now(),
@@ -294,17 +227,14 @@ module.exports.run = async ({ event, api, args }) => {
     saveBan();
 
     // রেসপন্স (নাম সহ)
-    const endTime = expire ? new Date(expire).toLocaleString('bn-BD') : "স্থায়ী";
-    
     return api.sendMessage(
-`╔══════ BAN ═══════╗
+`╔═══════BAN═════════╗
 👤 ইউজার: ${userName}
 🆔 UID: ${targetID}
 📝 কারণ: ${reason}
-⏳ সময়: ${timeDisplay}
-📆 শেষ: ${endTime}
+♾️ স্থায়ী ব্যান
 👮 ব্যান করেছেন: ${banInfo.byName}
-╚═══════════════════╝`,
+╚════════════════════╝`,
       threadID,
       messageID
     );
@@ -340,7 +270,7 @@ module.exports.run = async ({ event, api, args }) => {
 👤 ইউজার: ${userName}
 🆔 UID: ${targetID}
 📝 পূর্ববর্তী কারণ: ${banInfo.reason}
-⏳ সময়: ${banInfo.expire ? "সীমিত" : "স্থায়ী"} ব্যান ছিল
+♾️ স্থায়ী ব্যান ছিল
 👮 ব্যান করেছিলেন: ${banInfo.byName || "অজানা"}
 ✅ এখন আনব্যান করা হয়েছে`,
       threadID,
@@ -358,7 +288,7 @@ module.exports.run = async ({ event, api, args }) => {
       return api.sendMessage("📋 কোনো ব্যান করা ইউজার নেই", threadID, messageID);
     }
 
-    let listMessage = "╔══════ BAN LIST ══════╗\n";
+    let listMessage = "╔════BAN LIST ════╗\n";
     
     for (const [id, data] of bannedUsers) {
       // ইউজারের নাম বের করুন
@@ -372,17 +302,13 @@ module.exports.run = async ({ event, api, args }) => {
         console.error("ইউজারের নাম বের করতে সমস্যা:", error);
       }
       
-      const timeLeft = data.expire ? 
-        `⏳ ${getTimeRemaining(data.expire)}` : 
-        "♾️ স্থায়ী";
-      
       listMessage += `\n👤 ${userName}\n`;
       listMessage += `   🆔 ${id}\n`;
       listMessage += `   📝 ${data.reason}\n`;
-      listMessage += `   ${timeLeft}\n`;
+      listMessage += `   ♾️ স্থায়ী\n`;
       listMessage += `   👮 ${data.byName || "অজানা"}\n`;
     }
-    listMessage += "╚═══════════════════════╝";
+    listMessage += "╚═════════════════════╝";
 
     return api.sendMessage(listMessage, threadID, messageID);
   }

@@ -1,67 +1,39 @@
 module.exports.config = {
 	name: "kick",
-	version: "1.5.0",
-	hasPermssion: 1,
-	credits: "MR JUWEL",
-	description: "Ultra fast multi kick system",
-	commandCategory: "System",
-	usages: "[tag/reply]",
-	cooldowns: 2,
+	version: "1.0.1", 
+	hasPermssion: 0,
+	credits: "𝐂𝐘𝐁𝐄𝐑 ☢️_𖣘 -𝐁𝐎𝐓 ⚠️ 𝑻𝑬𝑨𝑴_ ☢️",
+ description: "the person you need to remove from the group by tag",
+	commandCategory: "System", 
+	usages: "[tag]", 
+	cooldowns: 0,
 };
 
-module.exports.run = async function ({ api, event }) {
-	try {
-		let targetIDs = [];
-
-		if (event.type === "message_reply") {
-			targetIDs.push(event.messageReply.senderID);
-		}
-
-		if (event.mentions) {
-			targetIDs = targetIDs.concat(Object.keys(event.mentions));
-		}
-
-		targetIDs = [...new Set(targetIDs)];
-
-		if (targetIDs.length === 0)
-			return api.sendMessage("⚠️ Reply or tag someone!", event.threadID, event.messageID);
-
-		const total = targetIDs.length;
-
-		// instant UI
-		const msg = await api.sendMessage(
-			`⚡ KICK STARTED\n👥 Total: ${total}\n🚀 Fast mode ON`,
-			event.threadID
-		);
-
-		let kicked = 0;
-		let failed = 0;
-
-		// ⚡ FAST PARALLEL KICK (no delay)
-		await Promise.all(
-			targetIDs.map(async (id) => {
-				try {
-					await api.removeUserFromGroup(id, event.threadID);
-					kicked++;
-				} catch (e) {
-					failed++;
-				}
-			})
-		);
-
-		// final result
-		return api.sendMessage(
-			`╭──── FAST RESULT ────╮\n` +
-			`│ 👥 Total: ${total}\n` +
-			`│ ✅ Kicked: ${kicked}\n` +
-			`│ ❌ Failed: ${failed}\n` +
-			`│ ⚡ Mode: Ultra Fast\n` +
-			`╰────────────────────╯`,
-			event.threadID
-		);
-
-	} catch (err) {
-		console.log(err);
-		return api.sendMessage("❌ Kick error!", event.threadID);
+module.exports.languages = {
+	"vi": {
+		"error": "Đã có lỗi xảy ra, vui lòng thử lại sau",
+		"needPermssion": "Cần quyền quản trị viên nhóm\nVui lòng thêm và thử lại!",
+		"missingTag": "Bạn phải tag người cần kick"
+	},
+	"en": {
+		"error": "Error! An error occurred. Please try again later!",
+		"needPermssion": "Need group admin\nPlease add and try again!",
+		"missingTag": "You need tag some person to kick"
 	}
-};
+}
+
+module.exports.run = async function({ api, event, getText, Threads }) {
+	var mention = Object.keys(event.mentions);
+	try {
+		let dataThread = (await Threads.getData(event.threadID)).threadInfo;
+		if (!dataThread.adminIDs.some(item => item.id == api.getCurrentUserID())) return api.sendMessage(getText("needPermssion"), event.threadID, event.messageID);
+		if(!mention[0]) return api.sendMessage("You have to tag the need to kick",event.threadID);
+		if (dataThread.adminIDs.some(item => item.id == event.senderID)) {
+			for (const o in mention) {
+				setTimeout(() => {
+					api.removeUserFromGroup(mention[o],event.threadID) 
+				},3000)
+			}
+		}
+	} catch { return api.sendMessage(getText("error"),event.threadID) }
+}

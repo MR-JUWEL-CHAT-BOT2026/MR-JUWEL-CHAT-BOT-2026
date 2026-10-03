@@ -1,181 +1,82 @@
-const chalk = require("chalk");
-const fs = require("fs");
-
-const logFile = __dirname + "/joinHistory.json";
-
-if (!fs.existsSync(logFile)) fs.writeFileSync(logFile, "[]");
-
-function saveLog(data) {
- fs.writeFileSync(logFile, JSON.stringify(data, null, 2));
-}
-
-function addLog(entry) {
- let data = JSON.parse(fs.readFileSync(logFile));
- data.push(entry);
- saveLog(data);
-}
+const chalk = require('chalk');
 
 module.exports.config = {
  name: "join",
- version: "5.0.3",
+ version: "2.1.0",
  hasPermssion: 2,
- credits: "乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐",
- description: "REAL CLEAN GROUP JOIN SYSTEM",
+ credits: "Shahadat Sahu",
+ description: "Join one or all bot groups using number or 'add all'",
  commandCategory: "system",
+ usages: "",
  cooldowns: 5
 };
 
-let autoMode = false;
-
 module.exports.onLoad = () => {
- console.log(chalk.hex("#00ff99")("🚀 CLEAN JOIN SYSTEM LOADED"));
+ console.log(chalk.bold.hex("#00c300")(" JOIN COMMAND LOADED SUCCESSFULLY✅"));
 };
 
-// ---------------- HANDLE REPLY ----------------
-module.exports.handleReply = async function ({ api, event, handleReply }) {
- const { threadID, senderID, body } = event;
- const { ID, author } = handleReply;
+module.exports.handleReply = async function({ api, event, handleReply, Threads }) {
+ const { threadID, messageID, senderID, body } = event;
+ const { ID } = handleReply;
 
- if (senderID != author) return;
+ if (!body) return api.sendMessage('❗ Reply with numbers (e.g. 1 2 3) or "add all" to join all.', threadID, messageID);
 
- const input = (body || "").trim().toLowerCase();
- let selected = [];
+ const input = body.trim().toLowerCase();
+
+ let selectedIndexes = [];
 
  if (input === "add all") {
- selected = ID.map((_, i) => i);
+ selectedIndexes = ID.map((_, index) => index); // all indexes
  } else {
- selected = input.split(/\s+/)
- .map(x => parseInt(x) - 1)
- .filter(i => !isNaN(i) && i >= 0 && i < ID.length);
+ selectedIndexes = body.split(/\s+/).map(x => parseInt(x.trim()) - 1).filter(i => !isNaN(i) && i >= 0 && i < ID.length);
+ if (selectedIndexes.length === 0) {
+ return api.sendMessage("⭕ Invalid input. Use numbers (1 2 3) or 'add all'.", threadID, messageID);
+ }
  }
 
- if (selected.length === 0)
- return api.sendMessage("❌ Invalid input", threadID);
+ let added = 0, skipped = 0, failed = 0;
 
- let result = {
- added: 0,
- already: 0,
- failed: 0,
- retry: 0,
- details: []
- };
-
- for (const i of selected) {
- const tid = ID[i];
-
+ for (const i of selectedIndexes) {
  try {
- const info = await api.getThreadInfo(tid);
- const botID = api.getCurrentUserID();
+ const threadIDToJoin = ID[i];
+ const threadInfo = await Threads.getInfo(threadIDToJoin);
+ const { participantIDs, approvalMode, adminIDs } = threadInfo;
 
- const isMember = info.participantIDs.includes(botID);
-
- if (isMember) {
- result.already++;
-
- result.details.push(
- `⚠️ Already Joined → ${info.name}`
- );
-
- addLog({
- user: senderID,
- threadID: tid,
- name: info.name,
- status: "Already Joined",
- time: new Date().toISOString()
- });
-
+ if (participantIDs.includes(senderID)) {
+ skipped++;
  continue;
  }
 
- let success = false;
+ await api.addUserToGroup(senderID, threadIDToJoin);
 
- for (let r = 0; r < 3; r++) {
- try {
- await api.addUserToGroup(botID, tid);
- success = true;
- result.retry += r;
- break;
- } catch {
- await new Promise(res => setTimeout(res, 700));
- }
- }
-
- if (success) {
- result.added++;
- result.details.push(`✅ Joined → ${info.name}`);
+ if (approvalMode && !adminIDs.some(ad => ad.id == api.getCurrentUserID())) {
+ api.sendMessage(`📨 Pending approval in "${threadInfo.threadName}".`, threadID);
  } else {
- result.failed++;
- result.details.push(`❌ Failed → ${info.name}`);
+ api.sendMessage(`✅ Added to "${threadInfo.threadName}".`, threadID);
  }
 
- addLog({
- user: senderID,
- threadID: tid,
- name: info.name,
- status: success ? "Joined" : "Failed",
- time: new Date().toISOString()
- });
-
- } catch {
- result.failed++;
- result.details.push(`❌ Error → Unknown Group`);
+ added++;
+ } catch (err) {
+ failed++;
+ api.sendMessage(`❌ Failed to add to #${i + 1}: ${err.message}`, threadID);
  }
  }
 
- return api.sendMessage(
-`╔══════════════════════╗
-║ ⚡ REAL-TIME REPORT
-╠══════════════════════╣
-║ ✅ Added : ${result.added}
-║ ⚠️ Already : ${result.already}
-║ ❌ Failed : ${result.failed}
-║ 🔄 Retry : ${result.retry}
-╚══════════════════════╝
-
-📌 DETAILS:
-${result.details.join("\n") || "No Data"}
-
-⚡ MODE: ${autoMode ? "AUTO ON" : "AUTO OFF"}`,
- threadID
- );
+ return api.sendMessage(`📊 Join Report:\n✅ Added: ${added}\n⏩ Already in group: ${skipped}\n❌ Failed: ${failed}`, threadID);
 };
 
-// ---------------- MAIN ----------------
-module.exports.run = async function ({ api, event }) {
- const { threadID, senderID, messageID } = event;
-
- const adminUID = "61594400795920";
- if (senderID !== adminUID)
- return api.sendMessage("⚠️ Only Admin can use this command", threadID);
-
- let inbox = await api.getThreadList(100, null, ["INBOX"]);
-
- let groups = inbox.filter(t =>
- t.isGroup &&
- t.threadID &&
- t.name &&
- t.participantIDs &&
- t.participantIDs.includes(api.getCurrentUserID())
- );
-
- let msg = `╔══════════════════════╗
-║ ⚡ REAL-TIME GROUP LIST
-╚══════════════════════╝\n\n`;
-
+module.exports.run = async function({ api, event, Threads }) {
+ const { threadID, messageID, senderID } = event;
+ const allThreads = await Threads.getAll();
+ let msg = `🔰 𝗝𝗢𝗜𝗡 𝗕𝗢𝗫 𝗟𝗜𝗦𝗧 🔰\n\n`;
  const ID = [];
 
- groups.forEach((t, i) => {
- msg += `┃ ${i + 1}. ${t.name}\n`;
+ allThreads.forEach((t, i) => {
+ msg += `${i + 1}. ${t.threadInfo.threadName}\n`;
  ID.push(t.threadID);
  });
 
- if (ID.length === 0)
- return api.sendMessage("⚠️ কোনো গ্রুপ পাওয়া যায়নি", threadID);
-
- msg += `\n╔══════════════════════╗
-║ ✏️ Reply: 1 2 3 / add all
-║ 🔒 ADMIN ONLY MODE
-╚══════════════════════╝`;
+ msg += `\n✏️ Reply with multiple numbers (e.g. 1 3 5) or type 'add all' to join all groups.`;
 
  return api.sendMessage(msg, threadID, (err, info) => {
  if (!err) {
@@ -187,19 +88,4 @@ module.exports.run = async function ({ api, event }) {
  });
  }
  }, messageID);
-};
-
-// ---------------- AUTO MODE ----------------
-module.exports.handleEvent = async function ({ api, event }) {
- const body = (event.body || "").toLowerCase();
-
- if (body === "auto on") {
- autoMode = true;
- return api.sendMessage("🟢 AUTO MODE ON", event.threadID);
- }
-
- if (body === "auto off") {
- autoMode = false;
- return api.sendMessage("🔴 AUTO MODE OFF", event.threadID);
- }
 };

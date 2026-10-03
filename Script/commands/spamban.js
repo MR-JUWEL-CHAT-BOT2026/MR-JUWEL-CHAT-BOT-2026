@@ -1,161 +1,69 @@
-const num = 5;
-const timeWindow = 60;
-
-module.exports.config = {
+ const num = 10 //number of times spam gets banned -1, for example 5 times 6 times will get banned
+const timee = 120 // During `timee` spam `num` times will be banned
+ module.exports.config = {
   name: "spamban",
-  version: "4.1.0",
+  version: "2.0.0",
   hasPermssion: 0,
-  credits: "乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐",
-  description: "বাংলা স্প্যাম ব্যান সিস্টেম",
+  credits: "𝐏𝐫𝐢𝐲𝐚𝐧𝐬𝐡 𝐑𝐚𝐣𝐩𝐮𝐭",
+  description: `automatically ban users if spam bots ${num} time/${timee}s`,
   commandCategory: "System",
+  usages: "x",
   cooldowns: 5
 };
 
-//
-// ✅ বট চালু হলে ব্যান লিস্ট লোড
-//
-module.exports.onLoad = async function ({ Users }) {
-  const allUsers = await Users.getAll();
+module.exports. run = async function ({api, event})  {
+  return api.sendMessage(`Automatically ban users if spam ${num} Time/${timee}s`, event.threadID, event.messageID);
+};
 
-  for (const user of allUsers) {
-    if (user?.data?.banned) {
-      global.data.userBanned.set(user.userID, {
-        reason: user.data.reason,
-        dateAdded: user.data.dateAdded
-      });
+module.exports.handleEvent = async function ({ Users, Threads, api, event})  {
+  let { senderID, messageID, threadID } = event;
+  var datathread = (await Threads.getData(event.threadID)).threadInfo;
+  
+  if (!global.client.autoban) global.client.autoban = {};
+  
+  if (!global.client.autoban[senderID]) {
+    global.client.autoban[senderID] = {
+      timeStart: Date.now(),
+      number: 0
+    }
+  };
+  
+  const threadSetting = global.data.threadData.get(threadID) || {};
+  const prefix = threadSetting.PREFIX || global.config.PREFIX;
+  if (!event.body || event.body.indexOf(prefix) != 0) return;
+  
+  if ((global.client.autoban[senderID].timeStart + (timee*1000)) <= Date.now()) {
+    global.client.autoban[senderID] = {
+      timeStart: Date.now(),
+      number: 0
     }
   }
-};
-
-//
-// 📌 ইনফো কমান্ড
-//
-module.exports.run = async function ({ api, event }) {
-  return api.sendMessage(
-`╔════════════════════╗
-║ 🤖 স্প্যাম ব্যান সিস্টেম
-╠════════════════════╣
-║ 📌 কমান্ড + "bot" detect
-║ ⚠️ ৪ বার → সতর্কবার্তা
-║ 🚫 ৫ বার → স্থায়ী ব্যান
-║ 👑 শুধু বট এডমিন safe
-╚════════════════════╝`,
-    event.threadID,
-    event.messageID
-  );
-};
-
-//
-// 🔥 মেইন সিস্টেম
-//
-module.exports.handleEvent = async function ({ api, event, Users }) {
-  const { senderID, threadID, body } = event;
-
-  if (!body) return;
-
-  // 👑 শুধু BOT ADMIN safe
-  const admins = global.config.ADMINBOT || [];
-  if (admins.includes(senderID)) return;
-
-  // ❌ আগে থেকেই ব্যান থাকলে কিছু করবে না
-  if (global.data?.userBanned?.has(senderID)) return;
-
-  if (!global.client.spamBan) global.client.spamBan = {};
-
-  if (!global.client.spamBan[senderID]) {
-    global.client.spamBan[senderID] = {
-      count: 0,
-      start: Date.now()
-    };
-  }
-
-  let data = global.client.spamBan[senderID];
-
-  // ⏰ ১ মিনিট পরে রিসেট
-  if (Date.now() - data.start > timeWindow * 1000) {
-    data.count = 0;
-    data.start = Date.now();
-  }
-
-  const text = body.toLowerCase();
-
-  const threadData = global.data.threadData.get(threadID) || {};
-  const prefix = threadData.PREFIX || global.config.PREFIX;
-
-  const isCommand = text.startsWith(prefix);
-  const isBot = /\bbot\b/i.test(text);
-
-  if (!isCommand && !isBot) return;
-
-  data.count++;
-  const count = data.count;
-
-  const userData = await Users.getData(senderID);
-  const name = userData?.name || "Unknown";
-
-  // ⚠️ সতর্কবার্তা
-  if (count === 4) {
-    return api.sendMessage(
-`╔════════════════╗
-║ ⚠️ সতর্কবার্তা
-╠════════════════╣
-║ 👤 ${name}
-║ 📊 ৪/৫
-║ ❗ বেশি স্প্যাম করো না
-╚════════════════╝`,
-      threadID
-    );
-  }
-
-  // 🚫 ব্যান
-  if (count >= num) {
-    const moment = require("moment-timezone");
-    const time = moment.tz("Asia/Dhaka").format("DD/MM/YYYY HH:mm:ss");
-
-    let user = userData || {};
-    user.data = user.data || {};
-
-    const reasonText = `তুমি গুপে SPAM করছো তাই তোমাকে পারমানেন্ট ব্যান করা হয়েছে  তুমি আর বট ব্যাবহার করতে পারবে না ⚠️❌
-যুদি বট ব্যাবহার করতে চাও তাহলে আমার বস
-乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐ এর ইনবক্সে নক করো বস'কে বলো সে তোমাকে  আনব্যান করে দিবে তার পর তুমি আবার ও বট ব্যাবহার করতে পারবে বস এর আইডি👤➡️ fb.com/mrjuwel520`;
-
-    user.data.banned = true;
-    user.data.reason = reasonText;
-    user.data.dateAdded = time;
-
-    await Users.setData(senderID, user);
-
-    global.data.userBanned.set(senderID, {
-      reason: reasonText,
-      dateAdded: time
-    });
-
-    global.client.spamBan[senderID] = { count: 0, start: Date.now() };
-
-    api.sendMessage(
-`╔════════════════════╗
-║ 🚫 ইউজার ব্যান
-╠════════════════════╣
-║ 👤 নাম: ${name}
-║ 🆔 ${senderID}
-║ ⏰ সময়: ${time}
-╠════════════════════╣
-${reasonText}
-╚════════════════════╝`,
-      threadID
-    );
-
-    // 📩 admin notify
-    const adminList = global.config.ADMINBOT || [];
-    for (const id of adminList) {
-      api.sendMessage(
-`🚨 AUTO BAN REPORT
-👤 ${name}
-🆔 ${senderID}
-📌 স্প্যাম করেছে
-⏰ ${time}`,
-        id
-      );
+  else {
+    global.client.autoban[senderID].number++;
+    if (global.client.autoban[senderID].number >= num) {
+      var namethread = datathread.threadName;
+      const moment = require("moment-timezone");
+      const timeDate = moment.tz("Asia/Dhaka").format("DD/MM/YYYY HH:mm:ss");
+      let dataUser = await Users.getData(senderID) || {};
+      let data = dataUser.data || {};
+      if (data && data.banned == true) return;
+      data.banned = true;
+      data.reason = `spam bot ${num} time/${timee}s` || null;
+      data.dateAdded = timeDate;
+      await Users.setData(senderID, { data });
+      global.data.userBanned.set(senderID, { reason: data.reason, dateAdded: data.dateAdded });
+      global.client.autoban[senderID] = {
+        timeStart: Date.now(),
+        number: 0
+      };
+      api.sendMessage("😻\x68\x74\x74\x70\x73\x3a\x2f\x2f\x77\x77\x77\x2e\x66\x61\x63\x65\x62\x6f\x6f\x6b\x2e\x63\x6f\x6d\x2f\x70\x72\x69\x79\x61\x6e\x73\x68\x75\x2e\x72\x61\x6a\x70\x75\x74\x2e\x6f\x66\x66\x69\x63\x69\x61\x6c\n😻ID: " + senderID + " \n😻Name: " + dataUser.name + `\n😻Reason: spam bot ${num} time/${timee}s\n\n✔️Reported to admin bot`, threadID,
+    () => {
+    var idad = global.config.ADMINBOT;
+    for(let ad of idad) {
+        api.sendMessage(`😻Spam offenders ${num} Time/${timee}s\n😻Name: ${dataUser.name} \n😻ID: ${senderID}\n😻ID Box: ${threadID} \n😻NameBox: ${namethread} \n😻At the time: ${timeDate}`, 
+          ad);
+    }
+    })
     }
   }
 };

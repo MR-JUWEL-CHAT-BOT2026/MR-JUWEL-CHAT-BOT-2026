@@ -1,63 +1,21 @@
-const fs = require("fs");
-const path = require("path");
-
-const dataPath = path.join(__dirname, "rules_data.json");
-
-// 🔰 LOAD DATA
-let lastSent = {};
-if (fs.existsSync(dataPath)) {
-  lastSent = JSON.parse(fs.readFileSync(dataPath));
-}
-
-// 🔰 SAVE DATA
-function saveData() {
-  fs.writeFileSync(dataPath, JSON.stringify(lastSent, null, 2));
-}
-
 module.exports.config = {
   name: "rules",
-  version: "8.0.0",
+  version: "1.0.0",
   hasPermssion: 0,
-  credits: "𝐌𝐑 𝐉𝐔𝐖𝐄𝐋",
-  description: "Auto + Command rules with admin mention (Fixed)",
+  credits: "MR JUWEL",
+  description: "Send group rules",
   commandCategory: "information",
-  usages: "rules",
+  usages: "rules2",
   cooldowns: 5
 };
 
-// 🔰 MESSAGE BUILDER
-async function buildMessage(api, event, Users) {
-  const threadInfo = await api.getThreadInfo(event.threadID);
-  const threadName = threadInfo.threadName || "Unknown Group";
+module.exports.run = async ({ api, event }) => {
+  const message = `
+❐-আসসালামু আলাইকুম, 🖤🌺
 
-  const adminIDs = threadInfo.adminIDs || [];
-
-  let adminText = "";
-  let mentions = [];
-
-  for (let admin of adminIDs) {
-    const name = await Users.getNameUser(admin.id);
-
-    adminText += `➤ ${name}\n`;
-
-    mentions.push({
-      tag: name,
-      id: admin.id
-    });
-  }
-
-  const botAdminUID = "61594400795920";
-  const botAdminName = await Users.getNameUser(botAdminUID);
-
-  const msg = `
-╔══════════════════════╗
-
-😊আসসালামু আলাইকুম আমাদের 🙌🫂
-
- ${threadName}
-
- 🎀🌷গুপের কিছু রুল্স আছে🫂♻️
-╚══════════════════════╝
+❐- 𝙶𝚁𝙾𝚄𝙿 এর কিছু 𝚁𝚄𝙻𝙴𝚂 আছে, এগুলো হয়তো অনেকেই জানেন না।
+যারা জানেন না তারা জেনে রাখেন ⬇️
+<----------------------------------------------->
 
 ০১) আজেবাজে খারাপ কথা বলা যাবে না ⚠️  
 ০২) কাউকে অপমান কিংবা গালাগালি করা যাবে না ⚠️🚫  
@@ -94,68 +52,21 @@ async function buildMessage(api, event, Users) {
 ৩৩) সমস্যা হলে অ্যাডমিনকে বলবেন 🚫  
 ৩৪) গ্রুপে ঝগড়া করবেন না 🚫  
 ৩৫) সবাই মিলেমিশে আড্ডা দিবেন 🌷😻
-╚══════════════════════╝
 
- 👑 BOT ADMIN:
- ${botAdminName}
- 🔗 https://www.facebook.com/${botAdminUID}
- 
-╔══════════════════════╗
-👥 GROUP ADMINS:
-${adminText}
-╚══════════════════════╝
-╔══════════════════════╗
-     🧾গুপ রুল্স না মানলে 
-     ওয়ার্নিং ছারা কিক😒🤌
-╚══════════════════════╝
+<----------------------------------------------->
+
+❖ কোনো সমস্যা হলে সরাসরি 𝙰𝙳𝙼𝙸𝙽𝚂 দের ইনবক্স করুন 💌  
+❖ রুলস ভাঙলে আগে ওয়ার্নিং, পরে অ্যাকশন 😈
+
+𝙱𝙾𝚃 𝙰𝙳𝙼𝙸𝙽:
+⎯꯭𓆩꯭𝆺𝅥😻⃞𝐌⃞𝆠፝֟𝐑᭄ღ倫 𝐉⃞𝐔⃞𝐖⃞𝐄⃞𝐋༢࿐  
+FB: https://www.facebook.com/mrjuwel2025
+
+_সাথেই থাকুন 🌺_
+⎯꯭𓆩꯭𝆺𝅥😻⃞𝐑⃞𝐈⃞𝐘⃞𝐀⃞༢࿐
+
+💖...........ধন্যবাদ সবাইকে...........💖
 `;
 
-  return { msg, mentions };
-};
-
-// 🔰 COMMAND
-module.exports.run = async ({ api, event, Users }) => {
-  const { msg, mentions } = await buildMessage(api, event, Users);
-
-  return api.sendMessage({
-    body: msg,
-    mentions: mentions
-  }, event.threadID, event.messageID);
-};
-
-// 🔰 AUTO SYSTEM (FINAL STRICT TIME FIX)
-module.exports.handleEvent = async ({ api, event, Users }) => {
-  try {
-    if (!event.body) return;
-
-    const now = new Date();
-
-    // 🔥 Bangladesh Time
-    const bdTime = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Dhaka" }));
-
-    const hour = bdTime.getHours();
-    const minute = bdTime.getMinutes();
-
-    const threadID = event.threadID;
-    const today = bdTime.toISOString().slice(0, 10);
-
-    const key = `${threadID}_${today}_rules`;
-
-    // ⏰ শুধু ৪:০০ - ৪:০৫ এর মধ্যে
-    if (hour === 16 && minute <= 5 && !lastSent[key]) {
-
-      const { msg, mentions } = await buildMessage(api, event, Users);
-
-      api.sendMessage({
-        body: msg,
-        mentions: mentions
-      }, threadID);
-
-      lastSent[key] = true;
-      saveData();
-    }
-
-  } catch (e) {
-    console.log("RULES AUTO ERROR:", e);
-  }
+  return api.sendMessage(message, event.threadID);
 };

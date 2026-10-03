@@ -1,238 +1,109 @@
 module.exports = {
   config: {
     name: "age",
-    version: "4.0",
-    author: "乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐",
+    version: "2.1",
+    author: "—͟͟͞͞𝐂𝐘𝐁𝐄𝐑 ☢️_𖣘 -𝐁𝐎𝐓 ⚠️ 𝑻𝑬𝑨𝑴_ ☢️",
     hasPermission: 0,
     commandCategory: "utility",
     cooldowns: 5,
-    description: "Ultimate Premium Age Calculator",
-    usage: "age DD/MM/YYYY"
+    description: "Calculate age from birth date",
+    usage: "[DD/MM/YYYY]",
+    dependencies: {
+      "moment-timezone": "",
+      "fs-extra": "",
+      "axios": ""
+    }
   },
 
   run: async function ({ api, event, args }) {
-
+    const fs = require("fs-extra");
     const moment = require("moment-timezone");
+    const axios = require("axios");
 
     try {
-
-      // HELP MENU
+      
       if (!args[0]) {
-        return api.sendMessage(
-`╭━━━━━━━━━━━━━━━━━━╮
-┃ 🎂 PREMIUM AGE SYSTEM
-╰━━━━━━━━━━━━━━━━━━╯
-
-📌 ব্যবহার:
-➤ age DD/MM/YYYY
-
-📌 উদাহরণ:
-➤ age 16/12/2006
-
-✨ FEATURES
-✔ Exact Age
-✔ Birthday Countdown
-✔ Birthday Day
-✔ Life Progress Bar
-✔ Fun Death Clock
-✔ Heartbeat Counter
-✔ Sleep Counter
-✔ Breath Counter
-✔ Premium UI
-
-╭━━━━━━━━━━━━━━━━━━╮
-┃ ⚡ Powered By MR JUWEL
-╰━━━━━━━━━━━━━━━━━━╯`,
-          event.threadID,
-          event.messageID
-        );
+        return api.sendMessage("⚠️ Please provide your birth date in DD/MM/YYYY format\nExample: age 16/12/2006", event.threadID);
       }
 
       const input = args[0];
-
-      // FORMAT CHECK
-      if (!/^\d{2}\/\d{2}\/\d{4}$/.test(input)) {
-        return api.sendMessage(
-          "❌ সঠিক ফরম্যাট দিন:\n➤ age DD/MM/YYYY",
-          event.threadID,
-          event.messageID
-        );
+      const dateParts = input.split('/');
+      
+      if (dateParts.length !== 3) {
+        return api.sendMessage("❌ Invalid date format. Please use DD/MM/YYYY", event.threadID);
       }
 
-      const [day, month, year] = input.split("/").map(Number);
+      const day = parseInt(dateParts[0]);
+      const month = parseInt(dateParts[1]);
+      const year = parseInt(dateParts[2]);
 
+      
+      if (isNaN(day) || day < 1 || day > 31) {
+        return api.sendMessage("❌ Invalid day (1-31)", event.threadID);
+      }
+      if (isNaN(month) || month < 1 || month > 12) {
+        return api.sendMessage("❌ Invalid month (1-12)", event.threadID);
+      }
+      if (isNaN(year) || year < 1000 || year > new Date().getFullYear()) {
+        return api.sendMessage("❌ Invalid year", event.threadID);
+      }
+
+      
+      const birthDate = moment.tz(`${year}-${month}-${day}`, "YYYY-MM-DD", "Asia/Dhaka");
       const now = moment.tz("Asia/Dhaka");
-
-      const originalBirth = moment.tz(
-        `${year}-${month}-${day}`,
-        "YYYY-MM-DD",
-        "Asia/Dhaka"
-      );
-
-      // INVALID DATE
-      if (!originalBirth.isValid()) {
-        return api.sendMessage(
-          "❌ ভুল জন্ম তারিখ দেওয়া হয়েছে",
-          event.threadID,
-          event.messageID
-        );
+      
+      if (birthDate.isAfter(now)) {
+        return api.sendMessage("❌ You can't be born in the future!", event.threadID);
       }
 
-      // FUTURE DATE
-      if (originalBirth.isAfter(now)) {
-        return api.sendMessage(
-          "❌ ভবিষ্যতের তারিখ দেওয়া যাবে না",
-          event.threadID,
-          event.messageID
-        );
-      }
+      const duration = moment.duration(now.diff(birthDate));
+      
+      
+      const years = duration.years();
+      const months = duration.months();
+      const days = duration.days();
+      const totalMonths = years * 12 + months;
+      const totalDays = Math.floor(duration.asDays());
+      const totalHours = Math.floor(duration.asHours());
+      const totalMinutes = Math.floor(duration.asMinutes());
+      const totalSeconds = Math.floor(duration.asSeconds());
 
-      // EXACT AGE
-      let birth = originalBirth.clone();
+      
+      const avatarPath = `${__dirname}/cache/${event.senderID}.jpg`;
+      const avatarUrl = `https://graph.facebook.com/${event.senderID}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`;
+      
+      const response = await axios.get(avatarUrl, { responseType: 'stream' });
+      const writer = fs.createWriteStream(avatarPath);
+      response.data.pipe(writer);
+      
+      await new Promise((resolve, reject) => {
+        writer.on('finish', resolve);
+        writer.on('error', reject);
+      });
 
-      const years = now.diff(birth, "years");
-      birth.add(years, "years");
+      
+      const message = {
+        body: `┏━━━━━━━━━━━━━━━━❂
+┃            🎂 𝗔𝗚𝗘 𝗖𝗔𝗟𝗖𝗨𝗟𝗔𝗧𝗢𝗥  🎂
+┣━━━━━━━━━━━━━━━━❂
+┃✦ 𝗗𝗮𝘁𝗲 𝗼𝗳 𝗕𝗶𝗿𝘁𝗵: ${day}/${month}/${year}
+┃✦ 𝗖𝘂𝗿𝗿𝗲𝗻𝘁 𝗔𝗴𝗲: ${years} years ${months} months
+┣━━━━[ 𝗗𝗘𝗧𝗔𝗜𝗟𝗦 ]━━━━❂
+┃❖ ${totalMonths} Months
+┃❖ ${totalDays} Days
+┃❖ ${totalHours} Hours
+┣━━━━━━━━━━━━━━━━❂
+┃  𝗖𝗿𝗲𝗮𝘁𝗲𝗱 𝗯𝘆: ─꯭─⃝‌‌𝐒𝐡𝐚𝐡𝐚𝐝𝐚𝐭 𝐂𝐡𝐚𝐭 𝐁𝐨𝐭
+┗━━━━━━━━━━━━━━━━❂`,
+        attachment: fs.createReadStream(avatarPath)
+      };
 
-      const months = now.diff(birth, "months");
-      birth.add(months, "months");
+      await api.sendMessage(message, event.threadID);
+      fs.unlinkSync(avatarPath);
 
-      const days = now.diff(birth, "days");
-
-      // TOTAL TIME
-      const totalDays = now.diff(originalBirth, "days");
-      const totalHours = now.diff(originalBirth, "hours");
-      const totalMinutes = now.diff(originalBirth, "minutes");
-      const totalSeconds = now.diff(originalBirth, "seconds");
-
-      // HEARTBEAT
-      const heartbeat = totalMinutes * 80;
-
-      // BREATH
-      const breaths = totalMinutes * 16;
-
-      // SLEEP
-      const sleepYears = (years / 3).toFixed(1);
-
-      // LIFE PROGRESS
-      const avgLife = 75;
-      const progress = Math.min(
-        100,
-        ((years / avgLife) * 100).toFixed(1)
-      );
-
-      const filled = Math.floor(progress / 10);
-      const empty = 10 - filled;
-
-      const progressBar =
-        "█".repeat(filled) + "░".repeat(empty);
-
-      // FUN DEATH CLOCK
-      const remainingLife = Math.max(
-        0,
-        (avgLife - years).toFixed(1)
-      );
-
-      // BIRTHDAY DAY
-      const birthDayName = originalBirth.format("dddd");
-
-      // NEXT BIRTHDAY
-      let nextBirthday = moment.tz(
-        `${now.year()}-${month}-${day}`,
-        "YYYY-MM-DD",
-        "Asia/Dhaka"
-      );
-
-      if (nextBirthday.isBefore(now)) {
-        nextBirthday.add(1, "year");
-      }
-
-      const nextBirthdayDay = nextBirthday.format("dddd");
-
-      const remainDays = nextBirthday.diff(now, "days");
-      const remainHours =
-        nextBirthday.diff(now, "hours") % 24;
-
-      const remainMinutes =
-        nextBirthday.diff(now, "minutes") % 60;
-
-      // BIRTHDAY REMINDER
-      let reminder = "❌ আজ জন্মদিন না";
-
-      if (remainDays === 0) {
-        reminder = "🎉 আজ আপনার জন্মদিন!";
-      } else if (remainDays === 1) {
-        reminder = "⏰ আগামীকাল আপনার জন্মদিন!";
-      }
-
-      // MESSAGE
-      const msg =
-`╔══════════════════════╗
-      🎂 AGE REPORT
-╚══════════════════════╝
-
-👤 জন্ম তারিখ
-➤ ${input}
-
-📅 জন্ম বার
-➤ ${birthDayName}
-
-🧓 বর্তমান বয়স
-➤ ${years} বছর
-➤ ${months} মাস
-➤ ${days} দিন
-
-📊 মোট সময়
-➤ ${totalDays.toLocaleString()} দিন
-➤ ${totalHours.toLocaleString()} ঘন্টা
-➤ ${totalMinutes.toLocaleString()} মিনিট
-➤ ${totalSeconds.toLocaleString()} সেকেন্ড
-
-❤️ Heartbeat Counter
-➤ ${heartbeat.toLocaleString()}+
-
-🌬 মোট শ্বাস নেওয়া
-➤ ${breaths.toLocaleString()}+
-
-😴 মোট ঘুম হিসাব
-➤ প্রায় ${sleepYears} বছর
-
-📈 Life Progress
-➤ ${progress}%
-
-${progressBar}
-
-☠ Fun Death Clock
-➤ বাকি প্রায় ${remainingLife} বছর
-
-🎉 Next Birthday
-➤ ${nextBirthdayDay}
-
-⏳ ${remainDays} দিন
-⏳ ${remainHours} ঘন্টা
-⏳ ${remainMinutes} মিনিট বাকি
-
-🔔 Birthday Reminder
-➤ ${reminder}
-
-╔══════════════════════╗
-     ✨ PREMIUM SYSTEM
-╚══════════════════════╝`;
-
-      return api.sendMessage(
-        msg,
-        event.threadID,
-        event.messageID
-      );
-
-    } catch (e) {
-
-      console.log(e);
-
-      return api.sendMessage(
-        "❌ Command Error",
-        event.threadID,
-        event.messageID
-      );
+    } catch (error) {
+      console.error("Error in age command:", error);
+      api.sendMessage("❌ An error occurred while processing your request", event.threadID);
     }
   }
 };

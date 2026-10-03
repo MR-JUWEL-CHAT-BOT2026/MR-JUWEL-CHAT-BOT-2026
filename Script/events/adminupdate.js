@@ -1,613 +1,201 @@
 module.exports.config = {
     name: "adminUpdate",
-    eventType: [
-        "log:thread-admins",
-        "log:thread-name",
-        "log:user-nickname",
-        "log:thread-icon",
-        "log:thread-call",
-        "log:thread-color",
-        "log:thread-image"
-    ],
-    version: "6.0.1",
-    credits: "M R | JUWEL",
-    description: "Advanced Stylish Group Update System",
+    eventType: ["log:thread-admins","log:thread-name","log:user-nickname","log:thread-icon","log:thread-call","log:thread-color"],
+    version: "5.0.1",
+    credits: "MR JUWEL",
+    description: "Update team info with 20+ random stylish themes",
     envConfig: {
-        sendNoti: true
+        sendNoti: true,
     }
 };
 
-module.exports.run = async function ({ api, event, Threads, Users }) {
+module.exports.run = async function ({ event, api, Threads, Users }) {
+    const fs = require("fs");
+    const themePath = __dirname + "/themes.json";
 
-    const fs = require("fs-extra");
-    const path = require("path");
-
-    if (!event.logMessageData) return;
-
-    const themePath = path.join(__dirname, "themes.json");
-
-    // ==================== THEMES ====================
-
+    // =============================
+    // 🎨 Default + Premium Themes Setup
+    // =============================
     if (!fs.existsSync(themePath)) {
-        fs.writeJsonSync(themePath, {
-
-            rainbow: {
-                top: "🌈━━━━━━━━━━━━━━━━🌈",
-                title: "RAINBOW UPDATE",
-                bottom: "🌈━━━━━━━━━━━━━━━━🌈",
-                icon: "🌈"
-            },
-
-            fire: {
-                top: "🔥━━━━━━━━━━━━━━━━🔥",
-                title: "FIRE UPDATE",
-                bottom: "🔥━━━━━━━━━━━━━━━━🔥",
-                icon: "🔥"
-            },
-
-            galaxy: {
-                top: "🌌━━━━━━━━━━━━━━━━🌌",
-                title: "GALAXY UPDATE",
-                bottom: "🌌━━━━━━━━━━━━━━━━🌌",
-                icon: "🌌"
-            },
-
-            cyber: {
-                top: "🤖━━━━━━━━━━━━━━━━🤖",
-                title: "CYBER UPDATE",
-                bottom: "🤖━━━━━━━━━━━━━━━━🤖",
-                icon: "🤖"
-            },
-
-            king: {
-                top: "👑━━━━━━━━━━━━━━━━👑",
-                title: "KING UPDATE",
-                bottom: "👑━━━━━━━━━━━━━━━━👑",
-                icon: "👑"
-            },
-
-            neon: {
-                top: "🪩━━━━━━━━━━━━━━━━🪩",
-                title: "NEON UPDATE",
-                bottom: "🪩━━━━━━━━━━━━━━━━🪩",
-                icon: "🪩"
-            },
-
-            diamond: {
-                top: "💎━━━━━━━━━━━━━━━━💎",
-                title: "DIAMOND UPDATE",
-                bottom: "💎━━━━━━━━━━━━━━━━💎",
-                icon: "💎"
-            },
-
-            anime: {
-                top: "🎌━━━━━━━━━━━━━━━━🎌",
-                title: "ANIME UPDATE",
-                bottom: "🎌━━━━━━━━━━━━━━━━🎌",
-                icon: "🎌"
-            },
-
-            hacker: {
-                top: "💻━━━━━━━━━━━━━━━━💻",
-                title: "HACKER UPDATE",
-                bottom: "💻━━━━━━━━━━━━━━━━💻",
-                icon: "💻"
-            },
-
-            thunder: {
-                top: "⚡━━━━━━━━━━━━━━━━⚡",
-                title: "THUNDER UPDATE",
-                bottom: "⚡━━━━━━━━━━━━━━━━⚡",
-                icon: "⚡"
-            }
-
-        }, { spaces: 2 });
+        fs.writeFileSync(themePath, JSON.stringify({
+            rainbow: { top: "🌈━━━━━━━━━━━━━━━🌈", title: "🔰  𝗨𝗣𝗗𝗔𝗧𝗘", bottom: "🌈━━━━━━━━━━━━━━━🌈", icon: "🌈" },
+            red:     { top: "🔥━━━━━━━━━━━━━━━🔥", title: "⚡  𝗨𝗣𝗗𝗔𝗧𝗘", bottom: "🔥━━━━━━━━━━━━━━━🔥", icon: "🔥" },
+            blue:    { top: "💙━━━━━━━━━━━━━━━💙", title: "🌊  𝗨𝗣𝗗𝗔𝗧𝗘", bottom: "💙━━━━━━━━━━━━━━━💙", icon: "💙" },
+            pink:    { top: "🌸━━━━━━━━━━━━━━━🌸", title: "💖  𝗨𝗣𝗗𝗔𝗧𝗘", bottom: "🌸━━━━━━━━━━━━━━━🌸", icon: "🌸" },
+            gold:    { top: "⚡━━━━━━━━━━━━━━━⚡", title: "✨  𝗨𝗣𝗗𝗔𝗧𝗘", bottom: "⚡━━━━━━━━━━━━━━━⚡", icon: "⚡" },
+            neon:    { top: "💡━━━━━━━━━━━━━━━💡", title: "🌌  𝗡𝗘𝗢𝗡 𝗨𝗣𝗗𝗔𝗧𝗘", bottom: "💡━━━━━━━━━━━━━━━💡", icon: "💡" },
+            cyber:   { top: "🤖━━━━━━━━━━━━━━━🤖", title: "⚙️  𝗖𝗬𝗕𝗘𝗥 𝗨𝗣𝗗𝗔𝗧𝗘", bottom: "🤖━━━━━━━━━━━━━━━🤖", icon: "🤖" },
+            diamond: { top: "💎━━━━━━━━━━━━━━━💎", title: "💠  𝗗𝗜𝗔𝗠𝗢𝗡𝗗", bottom: "💎━━━━━━━━━━━━━━━💎", icon: "💎" },
+            fireworks: { top: "🎆━━━━━━━━━━━━━━━🎆", title: "✨  𝗖𝗘𝗟𝗘𝗕𝗥𝗔𝗧𝗘", bottom: "🎆━━━━━━━━━━━━━━━🎆", icon: "🎆" },
+            galaxy:  { top: "🌌━━━━━━━━━━━━━━━🌌", title: "🪐  𝗚𝗔𝗟𝗔𝗫𝗬", bottom: "🌌━━━━━━━━━━━━━━━🌌", icon: "🌌" },
+            dragon:  { top: "🐉━━━━━━━━━━━━━━━🐉", title: "🔥  𝗗𝗥𝗔𝗚𝗢𝗡", bottom: "🐉━━━━━━━━━━━━━━━🐉", icon: "🐉" },
+            skull:   { top: "💀━━━━━━━━━━━━━━━💀", title: "☠️  𝗦𝗞𝗨𝗟𝗟", bottom: "💀━━━━━━━━━━━━━━━💀", icon: "💀" },
+            samurai: { top: "⚔️━━━━━━━━━━━━━━━⚔️", title: "🥷  𝗦𝗔𝗠𝗨𝗥𝗔𝗜", bottom: "⚔️━━━━━━━━━━━━━━━⚔️", icon: "⚔️" },
+            toxic:   { top: "☣️━━━━━━━━━━━━━━━☣️", title: "💀  𝗧𝗢𝗫𝗜𝗖", bottom: "☣️━━━━━━━━━━━━━━━☣️", icon: "☣️" },
+            matrix:  { top: "🟩━━━━━━━━━━━━━━━🟩", title: "💻  𝗠𝗔𝗧𝗥𝗜𝗫", bottom: "🟩━━━━━━━━━━━━━━━🟩", icon: "🟩" },
+            space:   { top: "🚀━━━━━━━━━━━━━━━🚀", title: "🌠  𝗦𝗣𝗔𝗖𝗘", bottom: "🚀━━━━━━━━━━━━━━━🚀", icon: "🚀" },
+            ice:     { top: "❄️━━━━━━━━━━━━━━━❄️", title: "🧊  𝗜𝗖𝗘", bottom: "❄️━━━━━━━━━━━━━━━❄️", icon: "❄️" },
+            rose:    { top: "🌹━━━━━━━━━━━━━━━🌹", title: "💐  𝗥𝗢𝗦𝗘", bottom: "🌹━━━━━━━━━━━━━━━🌹", icon: "🌹" },
+            king:    { top: "👑━━━━━━━━━━━━━━━👑", title: "⚜️  𝗞𝗜𝗡𝗚", bottom: "👑━━━━━━━━━━━━━━━👑", icon: "👑" },
+            ninja:   { top: "🥷━━━━━━━━━━━━━━━🥷", title: "⚔️  𝗡𝗜𝗡𝗝𝗔", bottom: "🥷━━━━━━━━━━━━━━━🥷", icon: "🥷" }
+        }, null, 2));
     }
 
-    const themes = fs.readJsonSync(themePath);
+    let themes = JSON.parse(fs.readFileSync(themePath));
 
-    function randomTheme() {
+    // =============================
+    // 🎯 Helper: Random Theme
+    // =============================
+    function getRandomTheme() {
         const keys = Object.keys(themes);
-        return themes[
-            keys[Math.floor(Math.random() * keys.length)]
-        ];
+        return themes[keys[Math.floor(Math.random() * keys.length)]];
     }
 
-    const theme = randomTheme();
-
-    // ==================== USER ====================
-
-    async function getUser(uid) {
-
-        if (!uid) {
-            return {
-                name: "Unknown User",
-                mentions: []
-            };
-        }
-
-        let name = "Unknown User";
-
-        try {
-            name = await Users.getNameUser(uid);
-        } catch (e) {
-            name = "Unknown User";
-        }
-
-        if (!name) name = "Unknown User";
-
+    // =============================
+    // 🎯 Helper: Mention Highlight
+    // =============================
+    async function mentionUser(id) {
+        const name = await Users.getNameUser(id);
         return {
-            name,
-            mentions: [{
-                tag: name,
-                id: uid
-            }]
+            text: `✨ @${name} ✨`,
+            mentions: [{ tag: `@${name}`, id }]
         };
     }
 
-    // ==================== THREAD ====================
+    const { threadID, logMessageType, logMessageData } = event;
 
-    const threadID = event.threadID;
+    // ✅ Thread Info Load & Default Setup
+    let threadData = await Threads.getData(threadID);
+    if (!threadData) threadData = {};
+    if (!threadData.threadInfo) threadData.threadInfo = {};
 
-    const data =
-        await Threads.getData(threadID) || {};
+    let dataThread = threadData.threadInfo;
+    dataThread.adminIDs = dataThread.adminIDs || [];
+    dataThread.nicknames = dataThread.nicknames || {};
+    dataThread.threadName = dataThread.threadName || "";
+    dataThread.threadIcon = dataThread.threadIcon || "";
+    dataThread.threadColor = dataThread.threadColor || "";
 
-    if (!data.threadInfo)
-        data.threadInfo = {};
-
-    const info = data.threadInfo;
-
-    info.adminIDs = info.adminIDs || [];
-    info.nicknames = info.nicknames || {};
-
-    // ==================== SEND ====================
-
-    async function send(body, mentions = []) {
-
-        return api.sendMessage({
-            body,
-            mentions: mentions.filter(Boolean)
-        }, threadID);
-    }
-
-    // ==================== EVENTS ====================
-
+    // =============================
+    // 🎯 Log Event Handler
+    // =============================
     try {
-
-        switch (event.logMessageType) {
-
-            // ===================================================
-            // ADMIN UPDATE
-            // ===================================================
-
+        switch (logMessageType) {
             case "log:thread-admins": {
-
-                // Debug log - check console output to confirm field names if it still fails
-                console.log("[ADMIN UPDATE DEBUG]", JSON.stringify(event.logMessageData), "AUTHOR:", event.author, "SENDER:", event.senderID);
-
-                const target =
-                    event.logMessageData.TARGET_ID ||
-                    event.logMessageData.target_id;
-
-                const author =
-                    event.author ||
-                    event.logMessageData.ADMINID ||
-                    event.logMessageData.MANAGER_FBID ||
-                    event.logMessageData.author ||
-                    event.senderID;
-
-                const user =
-                    await getUser(target);
-
-                const admin =
-                    await getUser(author);
-
-                const adminEvent =
-                    event.logMessageData.ADMIN_EVENT ||
-                    event.logMessageData.admin_event;
-
-                const isAdded =
-                    adminEvent === true ||
-                    adminEvent === "true" ||
-                    adminEvent === "add_admin";
-
-                const isRemoved =
-                    adminEvent === false ||
-                    adminEvent === "false" ||
-                    adminEvent === "remove_admin";
-
-                // ADD ADMIN
-
-                if (isAdded) {
-
-                    if (!info.adminIDs.some(
-                        i => i.id == target
-                    )) {
-
-                        info.adminIDs.push({
-                            id: target
-                        });
-                    }
-
-                    await send(
-
-`${theme.top}
-👑 ${theme.title}
-${theme.bottom}
-
-✅ NEW ADMIN ADDED
-
-👤 User :
-${user.name}
-
-⚡ Added By :
-${admin.name}
-
-🎉 তাকে Admin বানানো হয়েছে
-🔥 Team Power Increased
-
-${theme.bottom}`,
-
-[
-user.mentions[0],
-admin.mentions[0]
-]
-
-                    );
-
-                    break;
+                const t = getRandomTheme();
+                if (logMessageData.ADMIN_EVENT == "add_admin") {
+                    dataThread.adminIDs.push({ id: logMessageData.TARGET_ID });
+                    const m = await mentionUser(logMessageData.TARGET_ID);
+                    api.sendMessage(
+`${t.top}
+${t.title} | 𝗔𝗱𝗺𝗶𝗻
+${t.bottom}
+👤 ${m.text}
+✅ তাকে Admin করা হয়েছে।
+`, threadID, { mentions: m.mentions });
                 }
-
-                // REMOVE ADMIN
-
-                if (isRemoved) {
-
-                    info.adminIDs =
-                        info.adminIDs.filter(
-                            i => i.id != target
-                        );
-
-                    await send(
-
-`${theme.top}
-❌ ${theme.title}
-${theme.bottom}
-
-🚫 ADMIN REMOVED
-
-👤 User :
-${user.name}
-
-⚡ Removed By :
-${admin.name}
-
-💀 তার Admin Power Remove করা হয়েছে
-
-${theme.bottom}`,
-
-[
-user.mentions[0],
-admin.mentions[0]
-]
-
-                    );
-
-                    break;
+                else if (logMessageData.ADMIN_EVENT == "remove_admin") {
+                    dataThread.adminIDs = dataThread.adminIDs.filter(item => item.id != logMessageData.TARGET_ID);
+                    const m = await mentionUser(logMessageData.TARGET_ID);
+                    api.sendMessage(
+`${t.top}
+${t.title} | 𝗔𝗱𝗺𝗶𝗻
+${t.bottom}
+👤 ${m.text}
+❌ তার Admin রোল মুছে ফেলা হয়েছে।
+`, threadID, { mentions: m.mentions });
                 }
-
-                // Fallback: unknown adminEvent value, still try to guess
-                console.log("[ADMIN UPDATE] Unhandled ADMIN_EVENT value:", adminEvent);
-
                 break;
             }
-
-            // ===================================================
-            // THREAD NAME
-            // ===================================================
-
-            case "log:thread-name": {
-
-                const oldName =
-                    info.threadName || "Unknown";
-
-                const newName =
-                    event.logMessageData.name ||
-                    "No Name";
-
-                info.threadName = newName;
-
-                await send(
-
-`${theme.top}
-🏷️ ${theme.title}
-${theme.bottom}
-
-✨ GROUP NAME UPDATED
-
-📌 Old Name :
-${oldName}
-
-🆕 New Name :
-${newName}
-
-⚡ Team Looks Fresh Now
-
-${theme.bottom}`
-
-                );
-
-                break;
-            }
-
-            // ===================================================
-            // NICKNAME
-            // ===================================================
-
-            case "log:user-nickname": {
-
-                const uid =
-                    event.logMessageData.participant_id;
-
-                const oldNick =
-                    info.nicknames[uid] ||
-                    "Original Name";
-
-                const newNick =
-                    event.logMessageData.nickname ||
-                    "Original Name";
-
-                info.nicknames[uid] = newNick;
-
-                const user =
-                    await getUser(uid);
-
-                await send(
-
-`${theme.top}
-🏷️ ${theme.title}
-${theme.bottom}
-
-✨ NICKNAME UPDATED
-
-👤 User :
-${user.name}
-
-📌 Old Nickname :
-${oldNick}
-
-🆕 New Nickname :
-${newNick}
-
-🔥 Stylish Upgrade Complete
-
-${theme.bottom}`,
-
-[user.mentions[0]]
-
-                );
-
-                break;
-            }
-
-            // ===================================================
-            // GROUP ICON
-            // ===================================================
 
             case "log:thread-icon": {
-
-                const icon =
-                    event.logMessageData.thread_icon ||
-                    event.logMessageData.threadIcon ||
-                    "👍";
-
-                info.threadIcon = icon;
-
-                await send(
-
-`${theme.top}
-🎭 ${theme.title}
-${theme.bottom}
-
-✨ GROUP EMOJI UPDATED
-
-🆕 New Emoji :
-${icon}
-
-⚡ Team Style Changed Successfully
-
-${theme.bottom}`
-
-                );
-
+                const t = getRandomTheme();
+                dataThread.threadIcon = event.logMessageData.thread_icon || "👍";
+                api.sendMessage(
+`${t.top}
+${t.title} | 𝗜𝗰𝗼𝗻
+${t.bottom}
+🆕 নতুন Icon: ${dataThread.threadIcon}
+`, threadID);
                 break;
             }
-
-            // ===================================================
-            // THREAD COLOR
-            // ===================================================
-
-            case "log:thread-color": {
-
-                await send(
-
-`${theme.top}
-🎨 ${theme.title}
-${theme.bottom}
-
-🌈 GROUP COLOR UPDATED
-
-⚡ New Theme Color Applied
-🔥 Chat Now Looks Amazing
-
-${theme.bottom}`
-
-                );
-
-                break;
-            }
-
-            // ===================================================
-            // THREAD PHOTO
-            // ===================================================
-
-            case "log:thread-image": {
-
-                await send(
-
-`${theme.top}
-🖼️ ${theme.title}
-${theme.bottom}
-
-✨ GROUP PHOTO UPDATED
-
-📸 New Group Photo Set
-🔥 Team Profile Looks Awesome
-
-${theme.bottom}`
-
-                );
-
-                break;
-            }
-
-            // ===================================================
-            // CALL EVENT
-            // ===================================================
 
             case "log:thread-call": {
-
-                // CALL START
-
-                if (
-                    event.logMessageData.event ==
-                    "group_call_started"
-                ) {
-
-                    const caller =
-                        await getUser(
-                            event.logMessageData.caller_id
-                        );
-
-                    await send(
-
-`${theme.top}
-📞 ${theme.title}
-${theme.bottom}
-
-☎️ GROUP CALL STARTED
-
-👤 Started By :
-${caller.name}
-
-⚡ সবাই Call এ Join দাও
-
-${theme.bottom}`,
-
-[caller.mentions[0]]
-
-                    );
-
-                    break;
+                const t = getRandomTheme();
+                if (logMessageData.event === "group_call_started") {
+                    const m = await mentionUser(logMessageData.caller_id);
+                    api.sendMessage(
+`${t.top}
+${t.title} | 𝗖𝗮𝗹𝗹
+${t.bottom}
+👤 ${m.text}
+▶️ ${(logMessageData.video) ? 'ভিডিও' : ''} কল শুরু করেছেন।
+`, threadID, { mentions: m.mentions });
+                } else if (logMessageData.event === "group_call_ended") {
+                    const callDuration = logMessageData.call_duration;
+                    const hours = Math.floor(callDuration / 3600);
+                    const minutes = Math.floor((callDuration - (hours * 3600)) / 60);
+                    const seconds = callDuration - (hours * 3600) - (minutes * 60);
+                    const timeFormat = `${hours}h ${minutes}m ${seconds}s`;
+                    api.sendMessage(
+`${t.top}
+${t.title} | 𝗖𝗮𝗹𝗹
+${t.bottom}
+📴 কল শেষ হয়েছে।
+⏳ সময়কাল: ${timeFormat}
+`, threadID);
+                } else if (logMessageData.joining_user) {
+                    const m = await mentionUser(logMessageData.joining_user);
+                    api.sendMessage(
+`${t.top}
+${t.title} | 𝗖𝗮𝗹𝗹
+${t.bottom}
+✨ ${m.text} Wlc Join The Call।
+`, threadID, { mentions: m.mentions });
                 }
-
-                // CALL END
-
-                if (
-                    event.logMessageData.event ==
-                    "group_call_ended"
-                ) {
-
-                    const duration =
-                        event.logMessageData.call_duration || 0;
-
-                    const h =
-                        String(
-                            Math.floor(duration / 3600)
-                        ).padStart(2, '0');
-
-                    const m =
-                        String(
-                            Math.floor(
-                                (duration % 3600) / 60
-                            )
-                        ).padStart(2, '0');
-
-                    const s =
-                        String(
-                            duration % 60
-                        ).padStart(2, '0');
-
-                    await send(
-
-`${theme.top}
-📴 ${theme.title}
-${theme.bottom}
-
-❌ GROUP CALL ENDED
-
-⏳ Duration :
-${h}:${m}:${s}
-
-⚡ Call Session Finished
-
-${theme.bottom}`
-
-                    );
-
-                    break;
-                }
-
-                // JOIN CALL
-
-                if (
-                    event.logMessageData.joining_user
-                ) {
-
-                    const user =
-                        await getUser(
-                            event.logMessageData.joining_user
-                        );
-
-                    await send(
-
-`${theme.top}
-📞 ${theme.title}
-${theme.bottom}
-
-✅ USER JOINED CALL
-
-👤 User :
-${user.name}
-
-🎧 এখন Call এ Connected
-
-${theme.bottom}`,
-
-[user.mentions[0]]
-
-                    );
-
-                    break;
-                }
-
                 break;
             }
 
+            case "log:thread-color": {
+                const t = getRandomTheme();
+                dataThread.threadColor = event.logMessageData.thread_color || "🌤";
+                api.sendMessage(
+`${t.top}
+${t.title} | 𝗖𝗼𝗹𝗼𝗿
+${t.bottom}
+🎨 নতুন রঙ: ${event.logMessageBody.replace("Theme", "Color")}
+`, threadID);
+                break;
+            }
+
+            case "log:user-nickname": {
+                const t = getRandomTheme();
+                dataThread.nicknames[logMessageData.participant_id] = logMessageData.nickname;
+                const m = await mentionUser(logMessageData.participant_id);
+                api.sendMessage(
+`${t.top}
+${t.title} | 𝗡𝗶𝗰𝗸𝗻𝗮𝗺𝗲
+${t.bottom}
+👤 ${m.text}
+➡️ নতুন নাম: ${(logMessageData.nickname.length == 0) ? "Original Name" : logMessageData.nickname}
+`, threadID, { mentions: m.mentions });
+                break;
+            }
+
+            case "log:thread-name": {
+                const t = getRandomTheme();
+                dataThread.threadName = event.logMessageData.name || "No name";
+                api.sendMessage(
+`${t.top}
+${t.title} | 𝗡𝗮𝗺𝗲
+${t.bottom}
+🆕 নতুন নাম: ${dataThread.threadName}
+`, threadID);
+                break;
+            }
         }
 
-        // ==================== SAVE ====================
-
-        await Threads.setData(threadID, {
-            threadInfo: info
-        });
-
-    } catch (err) {
-
-        console.error(
-            "[ ADMIN UPDATE ERROR ]",
-            err
-        );
-
-    }
-
+        // ✅ Save Updated Data
+        await Threads.setData(threadID, { threadInfo: dataThread });
+    } catch (e) { console.log(e) };
 };

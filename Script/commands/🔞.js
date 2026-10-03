@@ -34,14 +34,15 @@ const link = [
 "https://i.imgur.com/dZUaLxs.mp4",
 "https://i.imgur.com/NsGQ6DN.mp4",
 "https://i.imgur.com/OBbOS03.mp4",
+
 ];
 
 module.exports.config = {
  name: "🔞",
  version: "1.0.0",
- hasPermssion: 0,
+ hasPermssion: 1,
  credits: "MR JUWEL",
- description: "auto reply to 🔞 (Only Admin)",
+ description: "auto reply to salam",
  commandCategory: "noprefix",
  usages: "🔞",
  cooldowns: 5,
@@ -52,207 +53,47 @@ module.exports.config = {
  }
 };
 
-const adminIDs = ["61591542717221"];
-
-function isAdmin(userID) {
- return adminIDs.includes(userID.toString());
-}
-
-// সুপার কুল লোডিং এনিমেশন ফাংশন
-function getLoadingAnimation(step) {
- const frames = [
-   // Frame 1 - ডট এনিমেশন
-   "🟢 ⚪ ⚪ ⚪ ⚪\n⏳ লোড হচ্ছে...",
-   "⚪ 🟢 ⚪ ⚪ ⚪\n⏳ লোড হচ্ছে...",
-   "⚪ ⚪ 🟢 ⚪ ⚪\n⏳ লোড হচ্ছে...",
-   "⚪ ⚪ ⚪ 🟢 ⚪\n⏳ লোড হচ্ছে...",
-   "⚪ ⚪ ⚪ ⚪ 🟢\n⏳ লোড হচ্ছে...",
-   
-   // Frame 2 - বার এনিমেশন
-   "█░░░░░░░░░░░ 10%\n⏳ ভিডিও ডাউনলোড...",
-   "██░░░░░░░░░░ 20%\n⏳ ভিডিও ডাউনলোড...",
-   "███░░░░░░░░░ 30%\n⏳ ভিডিও ডাউনলোড...",
-   "████░░░░░░░░ 40%\n⏳ ভিডিও ডাউনলোড...",
-   "█████░░░░░░░ 50%\n⏳ ভিডিও ডাউনলোড...",
-   "██████░░░░░░ 60%\n⏳ ভিডিও ডাউনলোড...",
-   "███████░░░░░ 70%\n⏳ ভিডিও ডাউনলোড...",
-   "████████░░░░ 80%\n⏳ ভিডিও ডাউনলোড...",
-   "█████████░░░ 90%\n⏳ ভিডিও ডাউনলোড...",
-   "██████████░░ 95%\n⏳ প্রস্তুত হচ্ছে...",
-   "███████████░ 99%\n⏳ একদম শেষ...",
-   
-   // Frame 3 - স্পিনার এনিমেশন
-   "◐ প্রক্রিয়াকরণ...\n⏳ ভিডিও লোড হচ্ছে",
-   "◓ প্রক্রিয়াকরণ...\n⏳ ভিডিও লোড হচ্ছে",
-   "◑ প্রক্রিয়াকরণ...\n⏳ ভিডিও লোড হচ্ছে",
-   "◒ প্রক্রিয়াকরণ...\n⏳ ভিডিও লোড হচ্ছে",
-   
-   // Frame 4 - হৃদয় এনিমেশন
-   "❤️ 🤍 🤍 🤍\n💓 ভিডিও আসছে...",
-   "🤍 ❤️ 🤍 🤍\n💓 ভিডিও আসছে...",
-   "🤍 🤍 ❤️ 🤍\n💓 ভিডিও আসছে...",
-   "🤍 🤍 🤍 ❤️\n💓 ভিডিও আসছে...",
-   
-   // Frame 5 - রংবেরং এনিমেশন
-   "🔴 ⚪ ⚪ ⚪\n🌈 প্রস্তুত হচ্ছে...",
-   "⚪ 🟠 ⚪ ⚪\n🌈 প্রস্তুত হচ্ছে...",
-   "⚪ ⚪ 🟡 ⚪\n🌈 প্রস্তুত হচ্ছে...",
-   "⚪ ⚪ ⚪ 🟢\n🌈 প্রস্তুত হচ্ছে...",
-   "🟣 ⚪ ⚪ ⚪\n🌈 প্রস্তুত হচ্ছে...",
-   "⚪ 🔵 ⚪ ⚪\n🌈 প্রস্তুত হচ্ছে...",
- ];
-
- return frames[step % frames.length];
-}
-
-// ভিডিও ডাউনলোড ফাংশন
-function downloadVideo(url, path) {
- return new Promise((resolve, reject) => {
-   const file = fs.createWriteStream(path);
-   const requestStream = request({
-     url: encodeURI(url),
-     timeout: 15000,
-     headers: {
-       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-       'Accept': 'video/mp4'
-     }
-   });
-   
-   requestStream.pipe(file);
-   
-   let progress = 0;
-   requestStream.on('response', (response) => {
-     const totalSize = parseInt(response.headers['content-length'], 10);
-     let downloadedSize = 0;
-     
-     response.on('data', (chunk) => {
-       downloadedSize += chunk.length;
-       if (totalSize) {
-         progress = (downloadedSize / totalSize) * 100;
-       }
-     });
-   });
-   
-   file.on('finish', () => {
-     file.close();
-     resolve(true);
-   });
-   
-   file.on('error', (err) => {
-     fs.unlink(path, () => {});
-     reject(err);
-   });
-   
-   requestStream.on('error', (err) => {
-     fs.unlink(path, () => {});
-     reject(err);
-   });
- });
-}
-
-// লোডিং মেসেজ আপডেট ফাংশন
-async function updateLoadingMessage(api, messageID, threadID, step) {
- try {
-   const loadingText = getLoadingAnimation(step);
-   await api.editMessage(loadingText, messageID, threadID);
- } catch (error) {
-   // ইগনোর এডিট এরর
- }
-}
-
-module.exports.handleEvent = async ({ api, event }) => {
+module.exports.handleEvent = async ({ api, event, Threads }) => {
  const content = event.body ? event.body : '';
  const body = content.toLowerCase();
- 
- if (body.startsWith("🔞") || body === "🔞") {
-   if (!isAdmin(event.senderID)) {
-     return api.sendMessage("❌ এই কমান্ডটি শুধুমাত্র বট অ্যাডমিন ব্যবহার করতে পারবেন!", event.threadID, event.messageID);
-   }
-   
-   let loadingMsg = null;
-   
-   try {
-     // লোডিং মেসেজ পাঠান
-     loadingMsg = await api.sendMessage(
-       getLoadingAnimation(0),
-       event.threadID
-     );
-     
-     // এনিমেশন আপডেট করা
-     let step = 1;
-     const animationInterval = setInterval(async () => {
-       if (step < 25) { // 25 বার আপডেট হবে
-         await updateLoadingMessage(api, loadingMsg.messageID, event.threadID, step);
-         step++;
-       } else {
-         clearInterval(animationInterval);
-       }
-     }, 300); // প্রতি 300ms পরে আপডেট
-     
-     const rahad = [
-       "╭•┄┅══❁✡🔞❁══┅┄•╮\n\n 𝗠𝗥 𝗝𝗨𝗪𝗘𝗟 \n\n╰•┄┅══❁🔞❁══┅┄•╯",
-       "╭•┄┅══❁✡🔞❁══┅┄•╮\n\n আমার বস জুয়েল এর পক্ষ থেকে 🥵🔞 \n\n╰•┄┅══❁🔞❁══┅┄•╯"
-     ];
-     const rahad2 = rahad[Math.floor(Math.random() * rahad.length)];
-     
-     const randomLink = link[Math.floor(Math.random() * link.length)];
-     const videoPath = __dirname + "/cache/2024.mp4";
-     
-     // ভিডিও ডাউনলোড
-     await downloadVideo(randomLink, videoPath);
-     
-     // এনিমেশন বন্ধ করুন
-     clearInterval(animationInterval);
-     
-     // ফাইনাল লোডিং মেসেজ
-     await api.editMessage(
-       "✅ লোড সম্পূর্ণ! ভিডিও আসছে... 🎬",
-       loadingMsg.messageID,
-       event.threadID
-     );
-     
-     // ভিডিও পাঠান
-     await api.sendMessage({
-       body: rahad2,
-       attachment: fs.createReadStream(videoPath)
-     }, event.threadID, () => {
-       setTimeout(() => {
-         fs.unlink(videoPath, (err) => {
-           if (err) console.error('Error deleting file:', err);
-         });
-       }, 2000);
-     });
-     
-     // লোডিং মেসেজ ডিলিট করুন
-     setTimeout(() => {
-       api.unsendMessage(loadingMsg.messageID);
-     }, 1000);
-     
-   } catch (error) {
-     console.error('Error:', error);
-     
-     // এনিমেশন বন্ধ করুন
-     if (loadingMsg) {
-       try {
-         await api.editMessage(
-           "❌ ভিডিও লোড করতে সমস্যা হয়েছে! তবে টেক্সট মেসেজ পাঠাচ্ছি...",
-           loadingMsg.messageID,
-           event.threadID
-         );
-       } catch (e) {}
-       
-       // লোডিং মেসেজ ডিলিট
-       setTimeout(() => {
-         api.unsendMessage(loadingMsg.messageID);
-       }, 2000);
-     }
-     
-     // শুধু টেক্সট পাঠান
-     const rahad = [
-       "╭•┄┅══❁✡🔞❁══┅┄•╮\n\n 𝗠𝗥 𝗝𝗨𝗪𝗘𝗟 \n\n╰•┄┅══❁🔞❁══┅┄•╯",
-       "╭•┄┅══❁✡🔞❁══┅┄•╮\n\n আমার বস জুয়েল এর পক্ষ থেকে 🥵🔞 \n\n╰•┄┅══❁🔞❁══┅┄•╯"
-     ];
-     api.sendMessage(rahad[Math.floor(Math.random() * rahad.length)], event.threadID);
-   }
+ if (body.startsWith("🔞")) {
+ const rahad = [
+ "╭•┄┅══❁✡🔞❁══┅┄•╮\n\n 𝗠𝗥 𝗝𝗨𝗪𝗘𝗟 \n\n╰•┄┅══❁🔞❁══┅┄•╯",
+ "╭•┄┅══❁✡🔞❁══┅┄•╮\n\n আমার বস জুয়েল এর পক্ষ থেকে 🥵🔞 \n\n╰•┄┅══❁🔞❁══┅┄•╯"
+
+ ];
+ const rahad2 = rahad[Math.floor(Math.random() * rahad.length)];
+
+ const callback = () => api.sendMessage({
+ body: `${rahad2}`,
+ attachment: fs.createReadStream(__dirname + "/cache/2024.mp4")
+ }, event.threadID, () => fs.unlinkSync(__dirname + "/cache/2024.mp4"), event.messageID);
+
+ const requestStream = request(encodeURI(link[Math.floor(Math.random() * link.length)]));
+ requestStream.pipe(fs.createWriteStream(__dirname + "/cache/2024.mp4")).on("close", () => callback());
+ return requestStream;
  }
+};
+
+module.exports.languages = {
+ "vi": {
+ "on": "Dùng sai cách rồi lêu lêu",
+ "off": "sv ngu, đã bão dùng sai cách",
+ "successText": `🧠`,
+ },
+ "en": {
+ "on": "on",
+ "off": "off",
+ "successText": "success!",
+ }
+};
+
+module.exports.run = async ({ api, event, Threads, getText }) => {
+ const { threadID, messageID } = event;
+ let data = (await Threads.getData(threadID)).data;
+ if (typeof data["🔞"] === "undefined" || data["🔞"]) data["🔞"] = false;
+ else data["🔞"] = true;
+ await Threads.setData(threadID, { data });
+ global.data.threadData.set(threadID, data);
+ api.sendMessage(`${(data["🔞"]) ? getText("off") : getText("on")} ${getText("successText")}`, threadID, messageID);
 };

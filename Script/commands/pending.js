@@ -91,23 +91,11 @@ module.exports.handleReply = async function({ api, event, handleReply, getText }
         return api.sendMessage(getText("invaildNumber", num), threadID, messageID);
       }
 
-      const groupID = handleReply.pending[index - 1].threadID;
-
-      // ✅ গ্রুপটা প্রসেস হয়েছে ধরে নিচ্ছি, count আগেই বাড়িয়ে দিচ্ছি
-      // যাতে welcome message পাঠাতে সমস্যা হলেও approve count ঠিক দেখায়
-      count++;
-
       try {
+        const groupID = handleReply.pending[index - 1].threadID;
+
         // 🔥 NOTI BOX 1 (UNCHANGED)
-        await api.sendMessage(`চ্ঁলে্ঁ এ্ঁসে্ঁছি্ঁ ⎯꯭𓆩꯭𝆺𝅥😻⃞𝐑⃞𝐈⃞𝐘⃞𝐀⃞༢࿐ এঁখঁনঁ তোঁমাঁদেঁরঁ সাঁথেঁ আঁড্ডাঁ দিঁবঁ..!😘`, groupID);
-
-        // 🔥 বটের নিকনেম সেট করা
-        try {
-          await api.changeNickname("⎯꯭𓆩꯭𝆺𝅥😻⃞𝐑⃞𝐈⃞𝐘⃞𝐀⃞༢࿐", groupID, api.getCurrentUserID());
-        } catch (e) {}
-
-        // সামান্য delay দিয়ে rate-limit এড়ানো
-        await new Promise(resolve => setTimeout(resolve, 800));
+        await api.sendMessage(`চ্ঁলে্ঁ এ্ঁসে্ঁছি্ঁ ⎯꯭𓆩꯭𝆺𝅥😻⃞𝐑⃞𝐈⃞𝐘⃞𝐀⃞༢࿐ এঁখঁনঁ তোঁমাঁদেঁরঁ সাঁথেঁ আঁড্ডাঁ দিঁবঁ..!😘`, groupID);
 
         // 🔥 NOTI BOX 2 (UNCHANGED)
         await api.sendMessage(`╭•┄┅═══❁🌺❁═══┅┄•╮
@@ -122,15 +110,14 @@ ${global.config.PREFIX}help
 ${global.config.PREFIX}info
 ${global.config.PREFIX}admin
 
-➤ Messenger: mrjuwel520
-➤ WhatsApp: +8801943488192
+➤ Messenger: mrjuwel999
+WhatsApp : +8801943488192
 
 ❖⋆══════════════⋆❖
 𝐎𝐰𝐧𝐞𝐫➢ 𝐌𝐑 𝐉𝐔𝐖𝐄𝐋`, groupID);
-      } catch (e) {}
 
-      // পরের গ্রুপ প্রসেস করার আগে delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+        count++;
+      } catch (e) {}
     }
 
     return api.sendMessage(getText("approveSuccess", count), threadID, messageID);
