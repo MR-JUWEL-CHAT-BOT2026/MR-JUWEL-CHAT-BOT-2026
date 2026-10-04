@@ -14,70 +14,69 @@ module.exports.config = {
         "log:message-unsend",
         "log:message-edit"
     ],
-    version: "3.0.0",
+    version: "4.0.1",
     credits: "乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐",
-    description: "Advanced bot logger — forwards to Group Admins + Bot Admins (UID from config.json)",
+    description: "👑 GOD Event Logger — Premium UI Edition",
     envConfig: {
         enable: true,
-        logToFile: true,
-        welcomeMessage: true,
-        goodbyeMessage: true,
         antiKickAlert: true,
-        forwardToGroupAdmins: true,   // গ্রুপ এডমিনদের ইনবক্সে ফরওয়ার্ড
-        forwardToBotAdmins: true,     // বট এডমিনদের ইনবক্সে ফরওয়ার্ড
+        forwardToGroupAdmins: true,
+        forwardToBotAdmins: true,
         rateLimit: 3000
     }
 };
 
-const fs = require("fs-extra");
-const path = require("path");
 const logger = require("../../utils/log");
 
 /* ============================================================
- *  🎨 UI CONSTANTS
+ *  🎨 PREMIUM UI CONSTANTS
  * ============================================================ */
 const UI = {
-    line: "━━━━━━━━━━━━━━━━━━━━━━",
-    thin: "─────────────────────",
-    arrow: "➤",
-    star: "⭐",
-    fire: "🔥",
-    crown: "👑",
-    shield: "🛡️",
-    wave: "🌊",
-    sparkle: "✨",
-    bot: "🤖",
-    group: "👥",
-    clock: "🕐",
-    warn: "⚠️",
-    info: "ℹ️",
-    check: "✅",
-    cross: "❌"
+    // Fancy borders
+    topBorder:    "╔══════════════════════════╗",
+    midBorder:    "╠══════════════════════════╣",
+    botBorder:    "╚══════════════════════════╝",
+    line:         "━━━━━━━━━━━━━━━━━━━━━━━━━━",
+    thin:         "─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─",
+    dot:          "•",
+
+    // Arrows
+    arrow:        "➤",
+    arrow2:       "▸",
+    arrow3:       "›",
+
+    // Icons
+    star:         "⭐",
+    fire:         "🔥",
+    crown:        "👑",
+    shield:       "🛡️",
+    wave:         "🌊",
+    sparkle:      "✨",
+    sparkles:     "💫",
+    bot:          "🤖",
+    group:        "👥",
+    clock:        "🕐",
+    warn:         "⚠️",
+    info:         "ℹ️",
+    check:        "✅",
+    cross:        "❌",
+    diamond:      "💎",
+    heart:        "💖",
+    rocket:       "🚀",
+    globe:        "🌐",
+    pin:          "📍",
+    tag:          "🏷️",
+    user:         "👤",
+    id:           "🆔",
+    time:         "⏰",
+    ram:          "💾",
+    uptime:       "📊"
 };
 
 /* ============================================================
  *  🧠 UTILS
  * ============================================================ */
 const cooldown = new Map();
-const LOG_DIR = path.join(__dirname, "../../logs");
-const LOG_FILE = path.join(LOG_DIR, "god-events.json");
-
-function ensureLogDir() {
-    if (!fs.existsSync(LOG_DIR)) fs.mkdirSync(LOG_DIR, { recursive: true });
-}
-
-function saveLog(entry) {
-    try {
-        ensureLogDir();
-        let logs = [];
-        if (fs.existsSync(LOG_FILE)) logs = fs.readJsonSync(LOG_FILE);
-        logs.push({ ...entry, time: Date.now() });
-        if (logs.length > 1000) logs = logs.slice(-1000);
-        fs.writeJsonSync(LOG_FILE, logs, { spaces: 2 });
-    } catch (e) {
-        logger("Log save failed: " + e.message, "[ god ]");
-    }
-}
 
 function dhakaTime() {
     return new Date().toLocaleString("en-GB", {
@@ -113,11 +112,19 @@ async function safeName(api, uid) {
     } catch { return uid; }
 }
 
+async function getThreadName(api, threadID) {
+    try {
+        const info = await api.getThreadInfo(threadID);
+        return info.threadName || info.name || "Unknown Group";
+    } catch {
+        return "Unknown Group";
+    }
+}
+
 /* ============================================================
- *  👑 BOT ADMINS — from config.json (no hardcoded UID!)
+ *  👑 BOT ADMINS
  * ============================================================ */
 function getBotAdmins() {
-    // আপনার বটের config.json স্ট্রাকচার অনুযায়ী কাজ করবে
     if (global.config && Array.isArray(global.config.ADMINBOT)) {
         return global.config.ADMINBOT.map(String);
     }
@@ -131,7 +138,7 @@ function getBotAdmins() {
 }
 
 /* ============================================================
- *  👥 GROUP ADMINS — from thread info
+ *  👥 GROUP ADMINS
  * ============================================================ */
 async function getGroupAdmins(api, threadID) {
     try {
@@ -144,26 +151,50 @@ async function getGroupAdmins(api, threadID) {
 }
 
 /* ============================================================
- *  🎨 UI BUILDERS
+ *  🎨 PREMIUM UI BUILDERS
  * ============================================================ */
-function header(title) {
+
+function fancyHeader(title) {
     return (
-        `${UI.line}\n` +
-        `   ${UI.sparkle} ${UI.crown}  ${title}  ${UI.crown} ${UI.sparkle}\n` +
-        `${UI.line}`
+        `${UI.topBorder}\n` +
+        `║   ${UI.sparkle}  ${UI.crown}  ${title}  ${UI.crown}  ${UI.sparkle}\n` +
+        `${UI.midBorder}`
     );
 }
 
-function footer() {
+function fancyFooter() {
     return (
-        `${UI.line}\n` +
-        `   ${UI.bot} Powered by 乛 M𝆠፝֟R JU𝆠፝֟W𝆠፝֟EL ${UI.fire}\n` +
-        `${UI.line}`
+        `${UI.midBorder}\n` +
+        `║  ${UI.bot}  Powered by 乛 M𝆠፝֟R JU𝆠፝֟W𝆠፝֟EL\n` +
+        `║  ${UI.fire}  Version 4.0.1  |  ${UI.diamond} Premium\n` +
+        `${UI.botBorder}`
     );
 }
 
 function infoBlock(rows) {
-    return rows.map(r => `  ${UI.arrow} ${r.label}: ${r.value}`).join("\n");
+    return rows
+        .map((r, i) => {
+            const prefix = i === 0 ? "┌" : (i === rows.length - 1 ? "└" : "├");
+            return `  ${prefix} ${UI.arrow2} ${r.label} ${UI.arrow3} ${r.value}`;
+        })
+        .join("\n");
+}
+
+function extraBlock(lines) {
+    return lines
+        .map((l, i) => {
+            const prefix = i === 0 ? "┌" : (i === lines.length - 1 ? "└" : "├");
+            return `  ${prefix} ${l}`;
+        })
+        .join("\n");
+}
+
+function statusBar() {
+    return (
+        `  ${UI.time} Time    ${UI.arrow3} ${dhakaTime()}\n` +
+        `  ${UI.uptime} Uptime  ${UI.arrow3} ${uptime()}\n` +
+        `  ${UI.ram} RAM     ${UI.arrow3} ${ram()}`
+    );
 }
 
 /* ============================================================
@@ -182,6 +213,7 @@ module.exports.run = async function ({ api, event, Threads }) {
 
     let task = "";
     let icon = UI.info;
+    let tag  = "EVENT";
     let extra = [];
 
     try {
@@ -189,13 +221,16 @@ module.exports.run = async function ({ api, event, Threads }) {
 
             /* ---------------- GROUP NAME ---------------- */
             case "log:thread-name": {
-                const oldName = (await Threads.getData(event.threadID)).name || "Unknown";
                 const newName = event.logMessageData.name || "Unknown";
+                const cached = await Threads.getData(event.threadID);
+                const oldName = cached?.name || "_(not saved)_";
+
                 icon = "📝";
-                task = `Group name changed`;
+                tag  = "GROUP NAME";
+                task = `Group name has been updated`;
                 extra.push(
-                    `  ${UI.arrow} Old : ${oldName}`,
-                    `  ${UI.arrow} New : ${newName}`
+                    `${UI.arrow2} Old ${UI.arrow3} ${oldName}`,
+                    `${UI.arrow2} New ${UI.arrow3} ${newName}`
                 );
                 await Threads.setData(event.threadID, { name: newName });
                 break;
@@ -203,18 +238,21 @@ module.exports.run = async function ({ api, event, Threads }) {
 
             case "log:thread-icon": {
                 icon = "🖼️";
-                task = `Group icon changed`;
+                tag  = "GROUP ICON";
+                task = `Group icon has been changed`;
                 break;
             }
 
             case "log:thread-color": {
                 icon = "🎨";
-                task = `Theme color changed`;
+                tag  = "THEME COLOR";
+                task = `Group theme color changed`;
                 break;
             }
 
             case "log:thread-emoji": {
                 icon = "😀";
+                tag  = "EMOJI";
                 task = `Group emoji changed`;
                 break;
             }
@@ -224,10 +262,11 @@ module.exports.run = async function ({ api, event, Threads }) {
                 const uid = event.logMessageData.participant_id;
                 const name = await safeName(api, uid);
                 icon = "🏷️";
-                task = `Nickname updated`;
+                tag  = "NICKNAME";
+                task = `A member's nickname was updated`;
                 extra.push(
-                    `  ${UI.arrow} User : ${name}`,
-                    `  ${UI.arrow} Nick : ${event.logMessageData.nickname || "(cleared)"}`
+                    `${UI.user} User ${UI.arrow3} ${name}`,
+                    `${UI.tag} Nick ${UI.arrow3} ${event.logMessageData.nickname || "(cleared)"}`
                 );
                 break;
             }
@@ -238,32 +277,39 @@ module.exports.run = async function ({ api, event, Threads }) {
                 const name = await safeName(api, uid);
                 const action = event.logMessageData.ADMIN_EVENT;
                 icon = action === "add_admin" ? "👑" : "🚫";
-                task = action === "add_admin" ? `Admin promoted` : `Admin demoted`;
-                extra.push(`  ${UI.arrow} User : ${name}`);
+                tag  = action === "add_admin" ? "ADMIN PROMOTED" : "ADMIN DEMOTED";
+                task = action === "add_admin"
+                    ? `New admin has been appointed`
+                    : `Admin privileges removed`;
+                extra.push(`${UI.user} User ${UI.arrow3} ${name}`);
                 break;
             }
 
             case "log:thread-approval-mode": {
                 icon = "🔐";
-                task = `Approval mode changed to: ${event.logMessageData.APPROVAL_MODE}`;
+                tag  = "APPROVAL MODE";
+                task = `Approval mode changed to ${event.logMessageData.APPROVAL_MODE}`;
                 break;
             }
 
             case "log:thread-call": {
                 const started = event.logMessageData.event === "group_call_started";
                 icon = "📞";
+                tag  = started ? "CALL STARTED" : "CALL ENDED";
                 task = started ? `Group call started` : `Group call ended`;
                 break;
             }
 
             case "log:message-unsend": {
                 icon = "🗑️";
+                tag  = "MESSAGE DELETED";
                 task = `A message was deleted`;
                 break;
             }
 
             case "log:message-edit": {
                 icon = "✏️";
+                tag  = "MESSAGE EDITED";
                 task = `A message was edited`;
                 break;
             }
@@ -275,24 +321,15 @@ module.exports.run = async function ({ api, event, Threads }) {
 
                 if (botAdded) {
                     icon = "🤖";
+                    tag  = "BOT ADDED";
                     task = `Bot was added to a new group!`;
                 } else {
                     icon = "🎉";
+                    tag  = "NEW MEMBER";
                     const names = added.map(u => u.fullName).join(", ");
-                    task = `New member joined`;
-                    extra.push(`  ${UI.arrow} Member(s): ${names}`);
-
-                    if (cfg.welcomeMessage) {
-                        const welcome =
-                            `${UI.line}\n` +
-                            `   ${UI.sparkle} W E L C O M E ${UI.sparkle}\n` +
-                            `${UI.thin}\n` +
-                            `  ${UI.star} স্বাগতম ${names}!\n` +
-                            `  ${UI.arrow} Group : ${(await Threads.getData(event.threadID)).name || "Unknown"}\n` +
-                            `  ${UI.arrow} Members: ${(await api.getThreadInfo(event.threadID)).participantIDs.length}\n` +
-                            `${UI.line}`;
-                        api.sendMessage(welcome, event.threadID);
-                    }
+                    task = `New member joined the group`;
+                    extra.push(`${UI.user} Member ${UI.arrow3} ${names}`);
+                    // ❌ Welcome মেসেজ বাদ দেওয়া হয়েছে
                 }
                 break;
             }
@@ -304,23 +341,14 @@ module.exports.run = async function ({ api, event, Threads }) {
 
                 if (botLeft) {
                     icon = "💀";
+                    tag  = "BOT REMOVED";
                     task = `Bot was kicked from group!`;
                 } else {
                     icon = "👋";
+                    tag  = "MEMBER LEFT";
                     const name = await safeName(api, leftId);
-                    task = `Member left the group`;
-                    extra.push(`  ${UI.arrow} Member: ${name}`);
-
-                    if (cfg.goodbyeMessage) {
-                        const bye =
-                            `${UI.line}\n` +
-                            `   ${UI.wave} G O O D B Y E ${UI.wave}\n` +
-                            `${UI.thin}\n` +
-                            `  ${UI.cross} ${name} গ্রুপ ছেড়ে চলে গেছে\n` +
-                            `  ${UI.arrow} আবার দেখা হবে! ${UI.sparkle}\n` +
-                            `${UI.line}`;
-                        api.sendMessage(bye, event.threadID);
-                    }
+                    task = `A member left the group`;
+                    extra.push(`${UI.user} Member ${UI.arrow3} ${name}`);
                 }
                 break;
             }
@@ -331,55 +359,49 @@ module.exports.run = async function ({ api, event, Threads }) {
         if (!task) return;
 
         /* ---------- BUILD FINAL REPORT ---------- */
-        const threadName = (await Threads.getData(event.threadID)).name || "Unknown";
+        const threadName = await getThreadName(api, event.threadID);
         const authorName = await safeName(api, event.author);
 
         const report =
-            `${header("GOD EVENT LOGGER")}\n` +
-            `  ${icon}  ${task}\n` +
-            `${UI.thin}\n` +
+            `${fancyHeader("GOD EVENT LOGGER")}\n` +
+            `║\n` +
+            `║  ${icon}  ${UI.crown} ${tag} ${UI.crown}\n` +
+            `║  ${UI.arrow2} ${task}\n` +
+            `║\n` +
+            `${UI.midBorder}\n` +
+            `║  ${UI.pin} EVENT DETAILS\n` +
+            `║\n` +
             infoBlock([
-                { label: "Group ", value: threadName },
-                { label: "Thread", value: event.threadID },
-                { label: "By    ", value: authorName },
-                { label: "UID   ", value: event.author }
-            ]) +
-            (extra.length ? "\n" + extra.join("\n") : "") +
-            `\n${UI.thin}\n` +
-            `  ${UI.clock} ${dhakaTime()}\n` +
-            `  ${UI.info} Uptime : ${uptime()}\n` +
-            `  ${UI.info} RAM    : ${ram()}\n` +
-            `${footer()}`;
-
-        /* ---------- SAVE LOG ---------- */
-        if (cfg.logToFile) {
-            saveLog({
-                threadID: event.threadID,
-                threadName,
-                author: event.author,
-                authorName,
-                type: event.logMessageType,
-                task
-            });
-        }
+                { label: `${UI.group} Group `, value: threadName },
+                { label: `${UI.id} Thread`, value: event.threadID },
+                { label: `${UI.user} By   `, value: authorName },
+                { label: `${UI.id} UID  `, value: event.author }
+            ]) + "\n" +
+            (extra.length
+                ? `║\n${UI.midBorder}\n║  ${UI.sparkles} ADDITIONAL INFO\n║\n` +
+                  extraBlock(extra) + "\n"
+                : "") +
+            `║\n${UI.midBorder}\n` +
+            `║  ${UI.clock} SYSTEM STATUS\n` +
+            `║\n` +
+            statusBar().split("\n").map(l => `║${l.slice(1)}`).join("\n") + "\n" +
+            `║\n` +
+            `${fancyFooter()}`;
 
         /* ============================================================
-         *  📤 BUILD RECEIVER LIST (no hardcoded UID!)
+         *  📤 BUILD RECEIVER LIST
          * ============================================================ */
         const receivers = new Set();
 
-        // 👑 Bot Admins from config.json
         if (cfg.forwardToBotAdmins) {
             getBotAdmins().forEach(id => receivers.add(String(id)));
         }
 
-        // 👥 Group Admins
         if (cfg.forwardToGroupAdmins) {
             const gAdmins = await getGroupAdmins(api, event.threadID);
             gAdmins.forEach(id => receivers.add(String(id)));
         }
 
-        // বট নিজে যেন নিজের ইনবক্সে না পাঠায়
         const botID = String(api.getCurrentUserID());
         receivers.delete(botID);
 
@@ -393,7 +415,6 @@ module.exports.run = async function ({ api, event, Threads }) {
             try {
                 await api.sendMessage(report, uid);
             } catch (err) {
-                // শুধু ফেইল হলেই ফাইল লগ (স্প্যাম এড়াতে)
                 logger(`Failed to send to ${uid}: ${err.message}`, "[ god ]");
             }
         }
