@@ -3,14 +3,41 @@ const request = require("request");
 
 module.exports.config = {
   name: "helpall",
-  version: "1.0.0",
+  version: "2.1.0",
   hasPermssion: 0,
-  credits: "MR JUWEL",
+  credits: "乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐",
   description: "Displays all available commands in one beautiful page",
   commandCategory: "system",
   usages: "[No args]",
   cooldowns: 5
 };
+
+// 🔤 Normal → 𝙰𝙱𝙲𝙳 (Mathematical Monospace) Converter
+function toABCD(text) {
+  const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const lower = "abcdefghijklmnopqrstuvwxyz";
+  const nums  = "0123456789";
+
+  const upperMap = "𝙰𝙱𝙲𝙳𝙴𝙵𝙶𝙷𝙸𝙹𝙺𝙻𝙼𝙽𝙾𝙿𝚀𝚁𝚂𝚃𝚄𝚅𝚆𝚇𝚈𝚉";
+  const lowerMap = "𝚊𝚋𝚌𝚍𝚎𝚏𝚐𝚑𝚒𝚓𝚔𝚕𝚖𝚗𝚘𝚙𝚚𝚛𝚜𝚝𝚞𝚟𝚠𝚡𝚢𝚣";
+  const numMap   = "𝟶𝟷𝟸𝟹𝟺𝟻𝟼𝟽𝟾𝟿";
+
+  return text
+    .split("")
+    .map(ch => {
+      let i = upper.indexOf(ch);
+      if (i > -1) return upperMap[i];
+
+      i = lower.indexOf(ch);
+      if (i > -1) return lowerMap[i];
+
+      i = nums.indexOf(ch);
+      if (i > -1) return numMap[i];
+
+      return ch;
+    })
+    .join("");
+}
 
 module.exports.run = async function ({ api, event }) {
   const { commands } = global.client;
@@ -26,26 +53,40 @@ module.exports.run = async function ({ api, event }) {
 
   allCommands.sort();
 
+  // 🔢 ০১ ০২ ০৩ সিরিয়াল + 𝙰𝙱𝙲𝙳 ফন্ট
+  const cmdList = allCommands
+    .map((cmd, i) => {
+      const serial = (i + 1)
+        .toString()
+        .padStart(2, "0")
+        .replace(/[0-9]/g, d => "০১২৩৪৫৬৭৮৯"[d]);
+
+      return `║ ${serial} ┃ ${toABCD(cmd.toUpperCase())}`;
+    })
+    .join("\n");
+
   const finalText = `
-╭━━━━━━━━━━━━━━━╮
-┃🌸𝐀𝐋𝐋 𝐂𝐎𝐌𝐌𝐀𝐍𝐃𝐒🌸  
-╰━━━━━━━━━━━━━━━╯
+╔════════════════════╗
+║  ✦ ${toABCD("ALL COMMANDS")} ✦
+╚════════════════════╝
 
-╔══════════════╗
-${allCommands.map(cmd => `║ 🔹 ${cmd}`).join("\n")}
-╚══════════════╝
+┏━━━━━━━━━━━━━━━━━━┓
+${cmdList}
+┗━━━━━━━━━━━━━━━━━━┛
 
-╭━━🔰 𝐁𝐎𝐓 𝐈𝐍𝐅𝐎 🔰━━╮
-┃ 🤖 𝐁𝐨𝐭 𝐍𝐚𝐦𝐞 : 𓆩꯭𝆺𝅥😻⃞𝐑⃞𝐈⃞𝐘⃞𝐀⃞༢࿐
-┃ 👑 𝐎𝐰𝐧𝐞𝐫   : 𓆩꯭𝆺𝅥😻⃞𝐌⃞𝆠፝֟𝐑᭄ღ倫 𝐉⃞𝐔⃞𝐖⃞𝐄⃞𝐋༢࿐
-┃ 📦 𝐓𝐨𝐭𝐚𝐥 𝐂𝐨𝐦𝐦𝐚𝐧𝐝𝐬 : ${allCommands.length}
-╰━━━━━━━━━━━━━━━━╯
+╔════════════════════╗
+║   🔰 ${toABCD("BOT INFO")} 🔰
+╠════════════════════╣
+║ 🤖 ${toABCD("BOT")}   : 𓆩꯭𝆺𝅥😻⃞𝐑⃞𝐈⃞𝐘⃞𝐀⃞༢࿐
+║ 👑 ${toABCD("OWNER")} : 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐
+║ 📦 ${toABCD("TOTAL")} : ${toABCD(String(allCommands.length))}
+╚═══════════════════╝
 
-✨ 𝐓𝐲𝐩𝐞 𝐚 𝐂𝐨𝐦𝐦𝐚𝐧𝐝 𝐭𝐨 𝐆𝐞𝐭 𝐒𝐭𝐚𝐫𝐭𝐞𝐝 ✨
+   ✨ ${toABCD("TYPE A COMMAND TO START")} ✨
 `;
 
   const backgrounds = [
-    "https://i.imgur.com/x1lGwuM.jpeg"
+    "https://i.imgur.com/HMtGAMO.jpeg"
   ];
 
   const selectedBg = backgrounds[Math.floor(Math.random() * backgrounds.length)];
