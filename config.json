@@ -15,7 +15,7 @@
   "OTPKEY": "Facebook 2FA Secret Key",
   "BOTNAME": " ⎯꯭𓆩꯭𝆺𝅥😻⃞𝐑⃞𝐈⃞𝐘𝐀⃞༢࿐",
   "PREFIX": "/",
-  "usePrefix": false,
+  "usePrefix": true,
   "reactUnsend": [
     "😡",
     "🤧",
