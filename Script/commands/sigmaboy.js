@@ -5,7 +5,7 @@ const request = require("request");
 module.exports.config = {
   name: "sigmaboy",
   version: "13.0.0",
-  hasPermssion: 3,
+  hasPermssion: 0,
   credits: "M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐",
   description: "random sigmaboy video",
   commandCategory: "sigma",
