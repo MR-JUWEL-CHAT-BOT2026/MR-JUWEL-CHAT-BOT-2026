@@ -6,9 +6,9 @@ const CREDIT = "乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི
 
 module.exports.config = {
   name: "sigma",
-  version: "1.2.0",
+  version: "1.3.0",
   hasPermssion: 0,
-  credits: CREDIT, // ফিক্স: আগে কোটেশন ছাড়া ছিল, তাই Syntax Error হতো
+  credits: CREDIT,
   description: "Sigma Attitude Video",
   commandCategory: "Video",
   usages: "sigma",
@@ -61,10 +61,19 @@ const MOODS = [
 ];
 
 const MAX_SIZE = 25 * 1024 * 1024; // Messenger লিমিট ~25MB
-const MAX_TRIES = 3;
+const MAX_TRIES = 6;
 
 function pick(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
 }
 
 function buildCaption(index, total) {
@@ -86,18 +95,51 @@ function download(url, dest) {
     url,
     method: "GET",
     responseType: "stream",
-    timeout: 20000,
-    maxContentLength: MAX_SIZE
-  }).then(
-    (res) =>
-      new Promise((resolve, reject) => {
-        const writer = fs.createWriteStream(dest);
-        res.data.pipe(writer);
-        writer.on("finish", resolve);
-        writer.on("error", reject);
-        res.data.on("error", reject);
-      })
-  );
+    timeout: 60000,
+    maxRedirects: 5,
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (Linux; Android 11) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Mobile Safari/537.36",
+      "Referer": "https://imgur.com/",
+      "Accept": "video/mp4,video/*;q=0.9,*/*;q=0.8"
+    }
+  }).then((res) => {
+    const type = String(res.headers["content-type"] || "");
+    if (!type.includes("video")) {
+      res.data.destroy();
+      throw new Error("Not a video (content-type: " + type + ")");
+    }
+
+    const len = parseInt(res.headers["content-length"] || "0", 10);
+    if (len > MAX_SIZE) {
+      res.data.destroy();
+      throw new Error("File too large: " + len);
+    }
+
+    return new Promise((resolve, reject) => {
+      const writer = fs.createWriteStream(dest);
+      let received = 0;
+      let failed = false;
+
+      const fail = (err) => {
+        if (failed) return;
+        failed = true;
+        try { res.data.destroy(); } catch (e) {}
+        try { writer.destroy(); } catch (e) {}
+        reject(err);
+      };
+
+      res.data.on("data", (chunk) => {
+        received += chunk.length;
+        if (received > MAX_SIZE) fail(new Error("File too large (stream)"));
+      });
+
+      res.data.pipe(writer);
+      writer.on("finish", () => { if (!failed) resolve(); });
+      writer.on("error", fail);
+      res.data.on("error", fail);
+    });
+  });
 }
 
 module.exports.run = async ({ api, event }) => {
@@ -122,8 +164,8 @@ module.exports.run = async ({ api, event }) => {
     )
   );
 
-  // ভিডিও ডাউনলোড না হলে অন্য লিংক দিয়ে আবার চেষ্টা করবে
-  const pool = [...LINKS].sort(() => Math.random() - 0.5).slice(0, MAX_TRIES);
+  // ডাউনলোড ফেল করলে অন্য লিংক দিয়ে আবার চেষ্টা করবে
+  const pool = shuffle(LINKS).slice(0, MAX_TRIES);
   let usedUrl = null;
 
   for (const url of pool) {
@@ -134,9 +176,11 @@ module.exports.run = async ({ api, event }) => {
         usedUrl = url;
         break;
       }
+      console.error(`[sigma] bad file size (${url}): ${size}`);
       cleanup();
     } catch (err) {
-      console.error(`[sigma] download failed (${url}):`, err.message);
+      const status = err.response ? ` [HTTP ${err.response.status}]` : "";
+      console.error(`[sigma] download failed (${url})${status}:`, err.message);
       cleanup();
     }
   }
