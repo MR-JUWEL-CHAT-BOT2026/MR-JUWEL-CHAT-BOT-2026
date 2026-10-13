@@ -76,7 +76,7 @@ module.exports.run = async function ({ api, event, args, Users, Threads }) {
 `;
 
   const imgLinks = [
-    "https://i.imgur.com/HMtGAMO.jpeg",
+    "https://i.imgur.com/MkTK40j.jpeg",
   ];
 
   const imgLink = imgLinks[Math.floor(Math.random() * imgLinks.length)];
