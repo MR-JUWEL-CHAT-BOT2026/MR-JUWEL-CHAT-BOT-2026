@@ -80,7 +80,7 @@ ${commandList}
 `;
 
   const imgPath = __dirname + "/cache/helpallbg.jpg";
-  const bg = "https://i.imgur.com/HMtGAMO.jpeg";
+  const bg = "https://i.imgur.com/MkTK40j.jpeg";
 
   try {
     const res = await axios({
