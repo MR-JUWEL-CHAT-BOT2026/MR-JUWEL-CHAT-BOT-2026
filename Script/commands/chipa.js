@@ -1,304 +1,171 @@
-const fs = require("fs");
-const path = require("path");
-const request = require("request");
-
 module.exports.config = {
-  name: "sigmaboy",
-  version: "13.0.0",
-  hasPermssion: 3,
-  credits: "M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐",
-  description: "random sigmaboy video",
-  commandCategory: "sigma",
-  usages: "sigmaboy | sigmaboy <number> | sigmaboy unban <id>",
-  cooldowns: 0, // কুলডাউন নিচের কোডে নিজে হ্যান্ডেল করা হয় (অ্যাডমিন বাদে ১৫ সেকেন্ড)
+  name: "chipa",
+  version: "1.0.0",
+  hasPermssion: 0,
+  credits: "乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐",
+  description: "Chipa banner with fixed text",
+  commandCategory: "banner",
+  usePrefix: true,
+  usages: "[@mention | reply]",
+  cooldowns: 40,
+  dependencies: {
+    "axios": "",
+    "fs-extra": "",
+    "path": "",
+    "canvas": ""
+  }
 };
 
-// ===== Video List =====
-// এখানে ভিডিও লিংক বসান (প্রতিটি লিংক কমা দিয়ে আলাদা করুন)
-const videoList = [
-  "https://i.imgur.com/gX1UC6Z.mp4",
-  "https://i.imgur.com/XOZHscf.mp4",
-  "https://i.imgur.com/oSea5n7.mp4",
-  "https://i.imgur.com/sdYiLgj.mp4",
-  "https://i.imgur.com/ARtdo3y.mp4",
-  "https://i.imgur.com/ehShfsH.mp4",
-  "https://i.imgur.com/96od2AY.mp4",
-  "https://i.imgur.com/yPsoM7y.mp4",
-  "https://i.imgur.com/Z6yzxVr.mp4",
-  "https://i.imgur.com/wpTyRAk.mp4",
-  "https://i.imgur.com/vfnCCEJ.mp4",
-  "https://i.imgur.com/mMls0Lw.mp4",
-  "https://i.imgur.com/hcmsiAt.mp4",
-  "https://i.imgur.com/ovOe6Ld.mp4",
-  "https://i.imgur.com/u9a1wC5.mp4",
-  "https://i.imgur.com/lovWQSe.mp4",
-  "https://i.imgur.com/P4L6u20.mp4",
-  "https://i.imgur.com/bEcPmra.mp4",
-  "https://i.imgur.com/2sD8aOo.mp4",
-  "https://i.imgur.com/P9Ih9qX.mp4",
-  "https://i.imgur.com/wDccwCw.mp4",
-  "https://i.imgur.com/wvO12h7.mp4",
-  "https://i.imgur.com/2EPpIwc.mp4",
-  "https://i.imgur.com/e7NGkxO.mp4",
-  "https://i.imgur.com/X1x55j0.mp4",
-  "https://i.imgur.com/rczUIjt.mp4",
-  "https://i.imgur.com/i2JUOos.mp4",
-  "https://i.imgur.com/ljCsOaB.mp4",
-  "https://i.imgur.com/7afYjRL.mp4",
-  "https://i.imgur.com/WqnDkow.mp4"
-];
+// ====== Template settings ======
+const TEMPLATE_URL = "https://i.imgur.com/oBiXHxt.jpeg";
+const REF_W = 1025;
+const REF_H = 1534;
+// বাম লোগো = যাকে মেনশন/রিপ্লাই করা হবে
+// ডান লোগো = যে কমান্ড দিবে
+// ছবি ঠিকমতো না বসলে শুধু এই x, y, rx, ry মান বদলাও
+// x, y = ফ্রেমের মাঝখান | rx = আড়াআড়ি রেডিয়াস | ry = লম্বালম্বি রেডিয়াস
+// (টেমপ্লেট মেপে বের করা মান: ফ্রেমের ভিতরের গোল জায়গা)
+const LEFT  = { x: 237, y: 227, rx: 92, ry: 86 };
+const RIGHT = { x: 776, y: 227, rx: 92, ry: 86 };
 
-// ===== Paths =====
-const CACHE_DIR = path.join(__dirname, "cache", "sigmaboy_cache");
-const DATA_FILE = path.join(__dirname, "cache", "sigmaboy_data.json");
-try { fs.mkdirSync(CACHE_DIR, { recursive: true }); } catch (e) {}
+// মেসেজে শুধু এই লেখাটা যাবে
+const TEXT = "বেবি চিপায়🥵চলো লড্ডু খেলবো🙈";
+// ================================
 
-// ===== 💾 Persistent Ban Storage =====
-function loadBanned() {
-  try {
-    const data = JSON.parse(fs.readFileSync(DATA_FILE, "utf8"));
-    return data.banned || {};
-  } catch (e) {
-    return {};
+module.exports.run = async function ({ event, api }) {
+  const axios = require("axios");
+  const fs = require("fs-extra");
+  const path = require("path");
+  const { createCanvas, loadImage } = require("canvas");
+
+  const { threadID, messageID, senderID, mentions, messageReply } = event;
+
+  let targetID = null;
+  if (mentions && Object.keys(mentions).length > 0) {
+    targetID = Object.keys(mentions)[0];
+  } else if (messageReply && messageReply.senderID) {
+    targetID = messageReply.senderID;
   }
-}
 
-function saveBanned() {
-  try {
-    fs.writeFileSync(
-      DATA_FILE,
-      JSON.stringify({ banned: global.client.sigmaboyBanned }, null, 2)
+  if (!targetID) {
+    return api.sendMessage(
+      "⚠️ কাউকে মেনশন করো বা রিপ্লাই দাও!\n\nউদাহরণ: chipa @নাম",
+      threadID,
+      messageID
     );
-  } catch (e) {
-    console.log("Ban save error:", e);
   }
-}
 
-// ===== Trackers =====
-if (!global.client.sigmaboySpamTracker) global.client.sigmaboySpamTracker = {};
-if (!global.client.sigmaboyBanned) global.client.sigmaboyBanned = loadBanned();
-if (!global.client.sigmaboyCooldown) global.client.sigmaboyCooldown = {};
-if (!global.client.sigmaboyLast) global.client.sigmaboyLast = {};
+  const cacheDir = path.join(__dirname, "cache");
+  fs.ensureDirSync(cacheDir);
+  const imgPath = path.join(cacheDir, `chipa_${senderID}_${targetID}.png`);
+  const templatePath = path.join(cacheDir, "chipa_template.jpg");
 
-// ===== Font Converter → 𝐀𝐁𝐂𝐃 =====
-// bold অক্ষরগুলো surrogate pair, তাই Array.from দিয়ে ভাঙতে হয়
-function toBoldFont(text) {
-  const normal = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  const bold = Array.from("𝐀𝐁𝐂𝐃𝐄𝐅𝐆𝐇𝐈𝐉𝐊𝐋𝐌𝐍𝐎𝐏𝐐𝐑𝐒𝐓𝐔𝐕𝐖𝐗𝐘𝐙𝐚𝐛𝐜𝐝𝐞𝐟𝐠𝐡𝐢𝐣𝐤𝐥𝐦𝐧𝐨𝐩𝐪𝐫𝐬𝐭𝐮𝐯𝐰𝐱𝐲𝐳𝟎𝟏𝟐𝟑𝟒𝟓𝟔𝟕𝟖𝟗");
-  return Array.from(text).map(ch => {
-    const i = normal.indexOf(ch);
-    return i > -1 ? bold[i] : ch;
-  }).join("");
-}
+  const getTemplate = async () => {
+    if (!fs.existsSync(templatePath)) {
+      try {
+        const res = await axios.get(TEMPLATE_URL, {
+          responseType: "arraybuffer",
+          timeout: 30000,
+          headers: {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+            "Referer": "https://imgur.com/"
+          }
+        });
+        fs.writeFileSync(templatePath, Buffer.from(res.data));
+      } catch (err) {
+        throw new Error("TEMPLATE download failed: " + (err.response?.status || err.message));
+      }
+    }
+    return loadImage(templatePath);
+  };
 
-// ===== Admin Check =====
-function isAdmin(id) {
-  const cfg = global.config || {};
-  const list = [].concat(cfg.ADMINBOT || [], cfg.OPERATOR || []).map(String);
-  return list.includes(String(id));
-}
+  const getAvatar = async (uid) => {
+    const url = `https://graph.facebook.com/${uid}/picture?width=720&height=720&access_token=6628568379|c1e620fa708a1d5696fb991c1bde5662`;
+    try {
+      const res = await axios.get(url, { responseType: "arraybuffer", timeout: 20000 });
+      return loadImage(Buffer.from(res.data));
+    } catch (err) {
+      throw new Error("AVATAR download failed: " + (err.response?.status || err.message));
+    }
+  };
 
-// ===== 🔁 No-Repeat Random Picker =====
-function pickIndex(threadID) {
-  if (videoList.length <= 1) return 0;
-  const last = global.client.sigmaboyLast[threadID];
-  let idx;
-  do {
-    idx = Math.floor(Math.random() * videoList.length);
-  } while (idx === last);
-  global.client.sigmaboyLast[threadID] = idx;
-  return idx;
-}
+  try {
+    // avatar1 = কমান্ড দাতা, avatar2 = মেনশন/রিপ্লাই করা ইউজার
+    const [template, avatar1, avatar2] = await Promise.all([
+      getTemplate(),
+      getAvatar(senderID),
+      getAvatar(targetID)
+    ]);
 
-// ===== ⬇️ Download (temp file → rename) =====
-function downloadVideo(url, dest) {
-  return new Promise((resolve, reject) => {
-    const tmp = `${dest}.${Date.now()}.tmp`;
-    const ws = fs.createWriteStream(tmp);
+    const W = template.width;
+    const H = template.height;
+    const sx = W / REF_W;
+    const sy = H / REF_H;
 
-    const fail = (err) => {
-      try { ws.destroy(); } catch (e) {}
-      try { fs.unlinkSync(tmp); } catch (e) {}
-      reject(err);
+    const canvas = createCanvas(W, H);
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(template, 0, 0, W, H);
+
+    // টেমপ্লেটের কপি (মুকুট ফিরিয়ে আনার জন্য)
+    const base = createCanvas(W, H);
+    base.getContext("2d").drawImage(template, 0, 0, W, H);
+
+    const drawAvatar = (img, c) => {
+      const cx = c.x * sx;
+      const cy = c.y * sy;
+      const rx = c.rx * sx;
+      const ry = c.ry * sy;
+      const w = rx * 2;
+      const h = ry * 2;
+      // ছবি বিকৃত না করে ফ্রেম ভরাতে সেন্টার-ক্রপ
+      const scale = Math.max(w / img.width, h / img.height);
+      const dw = img.width * scale;
+      const dh = img.height * scale;
+      ctx.save();
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+      ctx.closePath();
+      ctx.clip();
+      ctx.drawImage(img, cx - dw / 2, cy - dh / 2, dw, dh);
+      ctx.restore();
+
+      // ফ্রেমের উপরের সোনালি মুকুট যেন ছবির উপরে থাকে
+      const sx0 = Math.max(0, Math.floor(cx - 70 * sx));
+      const sy0 = Math.max(0, Math.floor(cy - ry - 4 * sy));
+      const sw = Math.floor(140 * sx);
+      const sh = Math.floor(22 * sy);
+      const src = base.getContext("2d").getImageData(sx0, sy0, sw, sh);
+      const d = src.data;
+      for (let i = 0; i < d.length; i += 4) {
+        const r = d[i], g = d[i + 1], b = d[i + 2];
+        const isGold = r > 150 && g > 100 && b < 130 && r - b > 80;
+        if (!isGold) d[i + 3] = 0;
+      }
+      const tmp = createCanvas(sw, sh);
+      tmp.getContext("2d").putImageData(src, 0, 0);
+      ctx.drawImage(tmp, sx0, sy0);
     };
 
-    const req = request(url);
-    req.on("response", (res) => {
-      if (res.statusCode !== 200) {
-        req.abort();
-        fail(new Error("HTTP " + res.statusCode));
-      }
-    });
-    req.on("error", fail);
-    ws.on("error", fail);
-    ws.on("close", () => {
-      try {
-        if (!fs.existsSync(tmp)) return;
-        if (fs.statSync(tmp).size === 0) return fail(new Error("Empty file"));
-        fs.renameSync(tmp, dest);
-        resolve();
-      } catch (e) {
-        fail(e);
-      }
-    });
-    req.pipe(ws);
-  });
-}
+    drawAvatar(avatar2, LEFT);   // মেনশন/রিপ্লাই করা ইউজার → বামে
+    drawAvatar(avatar1, RIGHT);  // কমান্ড দাতা → ডানে
 
-// ===== 📦 Video Cache =====
-async function getVideoFile(index) {
-  const url = videoList[index];
-  const file = path.join(CACHE_DIR, path.basename(url));
-  if (fs.existsSync(file) && fs.statSync(file).size > 0) return file;
-  await downloadVideo(url, file);
-  return file;
-}
+    fs.writeFileSync(imgPath, canvas.toBuffer("image/png"));
 
-// ===== 🛡️ Ban / Spam / Cooldown Check =====
-function checkUser(api, threadID, replyID, senderID) {
-  // 👑 অ্যাডমিনের জন্য কুলডাউন, স্প্যাম ও ব্যান কিছুই নেই
-  if (isAdmin(senderID)) return true;
-
-  const now = Date.now();
-
-  // 🚫 Ban Check
-  if (global.client.sigmaboyBanned[senderID]) {
-    api.sendMessage(
-      toBoldFont("🚫 You are BANNED! You cannot use this command."),
-      threadID,
-      replyID
-    );
-    return false;
-  }
-
-  // 📊 Spam Check (5 times / 60s) — কুলডাউনের আগে চেক হয়
-  if (!global.client.sigmaboySpamTracker[senderID]) {
-    global.client.sigmaboySpamTracker[senderID] = [];
-  }
-  global.client.sigmaboySpamTracker[senderID] = global.client.sigmaboySpamTracker[senderID]
-    .filter(t => now - t < 60000);
-  global.client.sigmaboySpamTracker[senderID].push(now);
-
-  if (global.client.sigmaboySpamTracker[senderID].length > 5) {
-    global.client.sigmaboyBanned[senderID] = true;
-    saveBanned();
-    api.sendMessage(
-      toBoldFont("🚫 SPAM DETECTED! You sent 5+ commands in 1 minute.\nYou have been BANNED."),
-      threadID,
-      replyID
-    );
-    return false;
-  }
-
-  // ⏱️ Cooldown Check (15s)
-  const lastUsed = global.client.sigmaboyCooldown[senderID] || 0;
-  const remaining = 15 - Math.floor((now - lastUsed) / 1000);
-
-  if (remaining > 0) {
-    api.sendMessage(
-      toBoldFont(`⏳ Please wait ${remaining}s before using this command again!`),
-      threadID,
-      replyID
-    );
-    return false;
-  }
-  global.client.sigmaboyCooldown[senderID] = now;
-  return true;
-}
-
-// ===== 🎬 Send Video =====
-async function sendVideo(api, threadID, replyID, senderID, index) {
-  try {
-    const file = await getVideoFile(index);
-    const bodyText = toBoldFont("Sigma Boy Video");
-
-    api.sendMessage(
-      { body: bodyText, attachment: fs.createReadStream(file) },
-      threadID,
-      (err) => {
-        if (err) return console.log("Send error:", err);
+    return api.sendMessage(
+      {
+        body: TEXT,
+        attachment: fs.createReadStream(imgPath)
       },
-      replyID
+      threadID,
+      () => fs.unlink(imgPath, () => {}),
+      messageID
     );
   } catch (e) {
-    console.log("Video error:", e);
-    api.sendMessage(
-      toBoldFont("❌ Failed to download video. Try again!"),
-      threadID,
-      replyID
-    );
-  }
-}
-
-// ===== ▶️ Command =====
-module.exports.run = async function ({ api, event, args }) {
-  const { threadID, messageID, senderID } = event;
-
-  // ===== 🔓 Unban (Admin only): sigmaboy unban <id> =====
-  if (args && args[0] && args[0].toLowerCase() === "unban") {
-    if (!isAdmin(senderID)) {
-      return api.sendMessage(
-        toBoldFont("❌ Only admin can use unban."),
-        threadID,
-        messageID
-      );
-    }
-    const target = args[1];
-    if (!target) {
-      return api.sendMessage(
-        toBoldFont("⚠️ Usage: sigmaboy unban <user id>"),
-        threadID,
-        messageID
-      );
-    }
-    if (!global.client.sigmaboyBanned[target]) {
-      return api.sendMessage(
-        toBoldFont("ℹ️ This user is not banned."),
-        threadID,
-        messageID
-      );
-    }
-    delete global.client.sigmaboyBanned[target];
-    delete global.client.sigmaboySpamTracker[target];
-    delete global.client.sigmaboyCooldown[target];
-    saveBanned();
+    console.log("CHIPA CMD ERROR:", e.response?.status, e.message);
     return api.sendMessage(
-      toBoldFont(`✅ Unbanned ${target}`),
+      "Error: " + (e.response?.status || e.message),
       threadID,
       messageID
     );
   }
-
-  // ===== 📭 Empty list guard =====
-  if (videoList.length === 0) {
-    return api.sendMessage(
-      toBoldFont("⚠️ No videos added yet!"),
-      threadID,
-      messageID
-    );
-  }
-
-  // ===== 🔢 Video by number: sigmaboy <number> =====
-  let index = null;
-  if (args && args[0]) {
-    const n = parseInt(args[0], 10);
-    if (isNaN(n) || n < 1 || n > videoList.length) {
-      return api.sendMessage(
-        toBoldFont(`❌ Invalid number! Choose between 1 and ${videoList.length}`),
-        threadID,
-        messageID
-      );
-    }
-    index = n - 1;
-  }
-
-  if (!checkUser(api, threadID, messageID, senderID)) return;
-
-  if (index === null) {
-    index = pickIndex(threadID);
-  } else {
-    global.client.sigmaboyLast[threadID] = index;
-  }
-
-  await sendVideo(api, threadID, messageID, senderID, index);
 };
