@@ -9,14 +9,15 @@ let count_req = 0;
 // ====== API URL ======
 const baseApiUrl = "https://noobs-api.top/dipto/baby";
 
-// ====== বটের ক্রেডিট ======
+// ====== বটের ক্রেডিট (প্রোটেক্টেড - চেঞ্জ করলে কোড কাজ করবে না) ======
 const BOT_CREDIT = "乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐";
 
 // ====== CREDIT PROTECTION ======
 const sha = (s) => crypto.createHash("sha256").update(String(s)).digest("hex");
 const CREDIT_HASH = "8f74924e81a157abaf089d90717e48a4949617a7379d20a2df567cb0ab0dad81";
 
-// ফাইলের সোর্স কোড পড়ে সব জায়গার ক্রেডিট চেক করে (কমেন্ট লাইন সহ)
+// ফাইলের সোর্স কোড পড়ে শুধু শুরুর ক্রেডিট জায়গাগুলো চেক করে (কমেন্ট লাইন সহ)
+// ফানি ক্যাপশন বা অন্য মেসেজের ক্রেডিট চেঞ্জ করলে কোডে কোনো সমস্যা হবে না
 function sourceCreditsValid() {
   try {
     const src = fs.readFileSync(__filename, "utf8");
@@ -45,6 +46,17 @@ const CREDIT_WARNING =
   `⚠️ ক্রেডিট চেঞ্জ করার কারণে BABY কোড কাজ করছে না!\n\n` +
   `✅ অরিজিনাল ক্রেডিট দিন:\n乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐\n\n` +
   `অরিজিনাল ক্রেডিট দিলে BABY কোড আবার কাজ করবে।`;
+
+// ====== ডুপ্লিকেট রিপ্লাই ঠেকানো ======
+// একই মেসেজে run / handleEvent / handleReply একসাথে চালু হলে শুধু প্রথমটাই উত্তর দেবে
+const handledMessages = new Set();
+function alreadyHandled(messageID) {
+  if (!messageID) return false;
+  if (handledMessages.has(messageID)) return true;
+  handledMessages.add(messageID);
+  setTimeout(() => handledMessages.delete(messageID), 30000);
+  return false;
+}
 
 // ====== ট্রিগার লিস্ট (বাংলা + ইংরেজি) ======
 const TRIGGER_WORDS = [
@@ -143,12 +155,13 @@ async function getUserProfilePicture(api, userID) {
 }
 
 // ====== ফানি রিপ্লাই লিস্ট ======
+// এখানকার ক্রেডিট সরাসরি লেখা আছে, চেঞ্জ করলেও কোড কাজ করবে
 const funnyReplies = [
   "বেশি bot Bot করলে leave নিবো কিন্তু😒😒",
-  `শুনবো না😼 তুমি আমার বস ${BOT_CREDIT} কে প্রেম করাই দাও নাই🥺পচা তুমি🥺\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
+  `শুনবো না😼 তুমি আমার বস 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐ কে প্রেম করাই দাও নাই🥺পচা তুমি🥺\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
   "আমি আবাল দের সাথে কথা বলি না,ok😒",
   "এতো ডেকো না,প্রেম এ পরে যাবো তো🙈",
-  `Bolo Babu, তুমি কি আমার বস ${BOT_CREDIT} কে ভালোবাসো? 🙈💋\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
+  `Bolo Babu, তুমি কি আমার বস 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐ কে ভালোবাসো? 🙈💋\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
   "বার বার ডাকলে মাথা গরম হয়ে যায় কিন্তু😑",
   "হ্যা বলো😒, তোমার জন্য কি করতে পারি😐😑?",
   "এতো ডাকছিস কেন?গালি শুনবি নাকি? 🤬",
@@ -157,8 +170,8 @@ const funnyReplies = [
   "আজ বট বলে অসম্মান করছিস,😰😿",
   "Hop beda😾,Boss বল boss😼",
   "চুপ থাক ,নাই তো তোর দাঁত ভেঙ্গে দিবো কিন্তু",
-  `আমাকে না ডেকে মেয়ে হলে বস ${BOT_CREDIT} এর ইনবক্সে চলে যা 🌚😂\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
-  `আমাকে বট না বলে , বস ${BOT_CREDIT} কে জানু বল জানু 😘`,
+  `আমাকে না ডেকে মেয়ে হলে বস 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐ এর ইনবক্সে চলে যা 🌚😂\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
+  `আমাকে বট না বলে , বস 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐ কে জানু বল জানু 😘`,
   "বার বার Disturb করছিস কোনো😾,আমার জানুর সাথে ব্যাস্ত আছি😋",
   "আরে বলদ এতো ডাকিস কেন🤬",
   "আমাকে ডাকলে ,আমি কিন্তু কিস করে দিবো😘",
@@ -166,10 +179,10 @@ const funnyReplies = [
   "হ্যাঁ জানু , এইদিক এ আসো কিস দেই🤭 😘",
   "দূরে যা, তোর কোনো কাজ নাই, শুধু bot bot করিস 😉😋🤣",
   "তোর কথা তোর বাড়ি কেউ শুনে না ,তো আমি কোনো শুনবো ?🤔😂",
-  `আমাকে ডেকো না,আমি বস ${BOT_CREDIT} এর সাথে ব্যাস্ত আছি`,
+  `আমাকে ডেকো না,আমি বস 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐ এর সাথে ব্যাস্ত আছি`,
   "কি হলো , মিস্টেক করচ্ছিস নাকি🤣",
   "বলো কি বলবা, সবার সামনে বলবা নাকি?🤭🤏",
-  `জান মেয়ে হলে বস ${BOT_CREDIT} এর ইনবক্সে চলে যাও 😍🫣💕\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
+  `জান মেয়ে হলে বস 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐ এর ইনবক্সে চলে যাও 😍🫣💕\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
   "কালকে দেখা করিস তো একটু 😈",
   "হা বলো, শুনছি আমি 😏",
   "আর কত বার ডাকবি ,শুনছি তো",
@@ -184,32 +197,32 @@ const funnyReplies = [
   "jang hanga korba😒😬",
   "হুম জান তোমারে উম্মমাহ😷😘",
   "আসসালামু আলাইকুম বলেন আপনার জন্য কি করতে পারি..!🥰",
-  `ভালোবাসার নামক আবলামি করতে চাইলে বস ${BOT_CREDIT} এর ইনবক্সে গুতা দিন ~🙊😘🤣\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
-  `আমাকে এতো না ডেকে বস ${BOT_CREDIT} কে একটা গফ দে 🙄`,
+  `ভালোবাসার নামক আবলামি করতে চাইলে বস 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐ এর ইনবক্সে গুতা দিন ~🙊😘🤣\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
+  `আমাকে এতো না ডেকে বস 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐ কে একটা গফ দে 🙄`,
   "আমাকে এতো না ডেকছ কেন ভলো টালো বাসো নাকি🤭🙈",
   "🌻🌺💚-আসসালামু আলাইকুম ওয়া রাহমাতুল্লাহ-💚🌺🌻",
-  `আমি এখন বস ${BOT_CREDIT} এর সাথে বিজি আছি আমাকে ডাকবেন না-😕😏 ধন্যবাদ-🤝🌻\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
-  `আমাকে না ডেকে আমার বস ${BOT_CREDIT} কে একটা জি এফ দাও-😽🫶🌺\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
+  `আমি এখন বস 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐ এর সাথে বিজি আছি আমাকে ডাকবেন না-😕😏 ধন্যবাদ-🤝🌻\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
+  `আমাকে না ডেকে আমার বস 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐ কে একটা জি এফ দাও-😽🫶🌺\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
   "ঝাং থুমালে আইলাপিউ পেপি-💝😽",
   "উফফ বুঝলাম না এতো ডাকছেন কেনো-😤😡😈",
-  `জান তোমার বান্ধবী রে আমার বস ${BOT_CREDIT} এর হাতে তুলে দিবা-🙊🙆‍♂`,
+  `জান তোমার বান্ধবী রে আমার বস 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐ এর হাতে তুলে দিবা-🙊🙆‍♂`,
   "আজকে আমার মন ভালো নেই তাই আমারে ডাকবেন না-😪🤧",
   "ঝাং 🫵থুমালে য়ামি রাইতে পালুপাসি উম্মম্মাহ-🌺🤤💦",
-  `চুনা ও চুনা আমার বস ${BOT_CREDIT} এর হবু বউ রে কেও দেকছো খুজে পাচ্ছি না😪🤧😭\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
+  `চুনা ও চুনা আমার বস 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐ এর হবু বউ রে কেও দেকছো খুজে পাচ্ছি না😪🤧😭\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
   "স্বপ্ন তোমারে নিয়ে দেখতে চাই তুমি যদি আমার হয়ে থেকে যাও-💝🌺🌻",
   "জান কিস দিবা-🙊😝🌻",
-  `জান মেয়ে হলে চিপায় আসো বস ${BOT_CREDIT} এর থেকে অনেক ভালোবাসা শিখছি তোমার জন্য-🙊🙈😽`,
+  `জান মেয়ে হলে চিপায় আসো বস 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐ এর থেকে অনেক ভালোবাসা শিখছি তোমার জন্য-🙊🙈😽`,
   "ইসস এতো ডাকো কেনো লজ্জা লাগে তো-🙈🖤🌼",
-  `আমার বস ${BOT_CREDIT} এর পক্ষ থেকে তোমারে এতো এতো ভালোবাসা-🥰😽🫶 আমার বস ${BOT_CREDIT} এর জন্য দোয়া করবেন-💝💚🌺🌻\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
-  `ভালোবাসা নামক আব্লামি করতে মন চাইলে আমার বস ${BOT_CREDIT} এর ইনবক্স চলে যাও-🙊🥱👅 🌻\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
+  `আমার বস 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐ এর পক্ষ থেকে তোমারে এতো এতো ভালোবাসা-🥰😽🫶 আমার বস 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐ এর জন্য দোয়া করবেন-💝💚🌺🌻\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
+  `ভালোবাসা নামক আব্লামি করতে মন চাইলে আমার বস 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐ এর ইনবক্স চলে যাও-🙊🥱👅 🌻\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
   "আমার জান তুমি শুধু আমার আমি তোমারে ৩৬৫ দিন ভালোবাসি-💝🌺😽",
-  `কিরে প্রেম করবি তাহলে বস ${BOT_CREDIT} এর ইনবক্সে গুতা দে 😘🤌\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
-  `জান আমার বস ${BOT_CREDIT} কে বিয়ে করবা-🙊😘🥳`,
+  `কিরে প্রেম করবি তাহলে বস 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐ এর ইনবক্সে গুতা দে 😘🤌\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
+  `জান আমার বস 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐ কে বিয়ে করবা-🙊😘🥳`,
   "আন্টি-🙆-আপনার মেয়ে-👰‍♀️-রাতে আমারে ভিদু কল দিতে বলে🫣-🥵🤤💦",
   "oii-🥺🥹-এক🥄 চামচ ভালোবাসা দিবা-🤏🏻🙂",
-  `আপনার সুন্দরী বান্ধুবীকে ফিতরা হিসেবে আমার বস ${BOT_CREDIT} কে দান করেন-🥱🐰🍒\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
+  `আপনার সুন্দরী বান্ধুবীকে ফিতরা হিসেবে আমার বস 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐ কে দান করেন-🥱🐰🍒\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
   "ও মিম ও মিম-😇-তুমি কেন চুরি করলা সাদিয়ার ফর্সা হওয়ার ক্রীম-🌚🤧",
-  `অনুমতি দিলাম-𝙋𝙧𝙤𝙥𝙤𝙨𝙚 কর বস ${BOT_CREDIT} কে-🐸😾🔪`,
+  `অনুমতি দিলাম-𝙋𝙧𝙤𝙥𝙤𝙨𝙚 কর বস 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐ কে-🐸😾🔪`,
   "𝙂𝙖𝙮𝙚𝙨-🤗-যৌবনের কসম দিয়ে আমারে 𝐁𝐥𝐚𝐜𝐤𝐦𝐚𝐢𝐥 করা হচ্ছে-🥲🤦‍♂️🤧",
   "𝗢𝗶𝗶 আন্টি-🙆‍♂️-তোমার মেয়ে চোখ মারে-🥺🥴🐸",
   "তাকাই আছো কেন চুমু দিবা-🙄🐸😘",
@@ -219,17 +232,17 @@ const funnyReplies = [
   "দিনশেষে পরের 𝐁𝐎𝐖 সুন্দর-☹️🤧",
   "তাবিজ কইরা হইলেও ফ্রেম এক্কান করমুই তাতে যা হই হোক-🤧🥱🌻",
   "ছোটবেলা ভাবতাম বিয়ে করলে অটোমেটিক বাচ্চা হয়-🥱-ওমা এখন দেখি কাহিনী অন্যরকম-😦🙂🌻",
-  `প্রেম করতে চাইলে বস ${BOT_CREDIT} এর ইনবক্সে চলে যা 😏🐸\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
-  `আজ একটা বিন নেই বলে ফেসবুকের নাগিন-🤧-গুলোরে আমার বস ${BOT_CREDIT} ধরতে পারছে না-🐸🥲\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
+  `প্রেম করতে চাইলে বস 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐ এর ইনবক্সে চলে যা 😏🐸\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
+  `আজ একটা বিন নেই বলে ফেসবুকের নাগিন-🤧-গুলোরে আমার বস 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐ ধরতে পারছে না-🐸🥲\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
   "চুমু থাকতে তোরা বিড়ি খাস কেন বুঝা আমারে-😑😒🐸⚒️",
-  `যে ছেড়ে গেছে-😔-তাকে ভুলে যাও-🙂-আমার বস ${BOT_CREDIT} এর সাথে প্রেম করে তাকে দেখিয়ে দাও-🙈🐸🤗\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
-  "হাজারো লুচ্চা লুচ্চির ভিরে-🙊🥵আমার বস সাহু এক নিস্পাপ ভালো মানুষ-🥱🤗🙆‍♂️",
+  `যে ছেড়ে গেছে-😔-তাকে ভুলে যাও-🙂-আমার বস 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐ এর সাথে প্রেম করে তাকে দেখিয়ে দাও-🙈🐸🤗\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
+  "হাজারো লুচ্চা লুচ্চির ভিরে-🙊🥵আমার বস 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐ এক নিস্পাপ ভালো মানুষ-🥱🤗🙆‍♂️",
   "রূপের অহংকার করো না-🙂❤️চকচকে সূর্যটাও দিনশেষে অন্ধকারে পরিণত হয়-🤗💜",
-  `সুন্দর মাইয়া মানেই-🥱আমার বস ${BOT_CREDIT} এর বউ-😽🫶আর বাকি গুলো আমার বেয়াইন-🙈🐸🤗\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
+  `সুন্দর মাইয়া মানেই-🥱আমার বস 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐ এর বউ-😽🫶আর বাকি গুলো আমার বেয়াইন-🙈🐸🤗\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
   "এত অহংকার করে লাভ নেই-🌸মৃত্যুটা নিশ্চিত শুধু সময়টা অ'নিশ্চিত-🖤🙂",
   "দিন দিন কিছু মানুষের কাছে অপ্রিয় হয়ে যাইতেছি-🙂😿🌸",
   "ভালোবাসার নামক আবলামি করতে চাইলে বস সাহুর ইনবক্সে গুতা দিন🤣😼",
-  `মেয়ে হলে বস ${BOT_CREDIT} এর ইনবক্সে চলে যা 🤭🤣😼\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
+  `মেয়ে হলে বস 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐ এর ইনবক্সে চলে যা 🤭🤣😼\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
   "হুদাই আমারে শয়তানে লারে-😝😑☹️",
   "𝗜 𝗟𝗢𝗩𝗘 𝗬𝗢𝗨-😽-আহারে ভাবছো তোমারে প্রোপজ করছি-🥴-থাপ্পর দিয়া কিডনী লক করে দিব-😒-ভুল পড়া বের করে দিবো-🤭🐸",
   "আমি একটা দুধের শিশু-😇-🫵𝗬𝗢𝗨🐸💦",
@@ -237,11 +250,11 @@ const funnyReplies = [
   "বালিকা━👸-𝐃𝐨 𝐲𝐨𝐮-🫵-বিয়া-𝐦𝐞-😽-আমি তোমাকে-😻-আম্মু হইতে সাহায্য করব-🙈🥱",
   "এই আন্টির মেয়ে-🫢🙈-𝐔𝐦𝐦𝐦𝐦𝐦𝐦𝐦𝐦𝐦𝐦𝐡-😽🫶-আসলেই তো স্বাদ-🥵💦-এতো স্বাদ কেন-🤔-সেই স্বাদ-😋",
   "ইস কেউ যদি বলতো-🙂-আমার শুধু তোমাকেই লাগবে-💜🌸",
-  `ওই বেডি তোমার বাসায় না আমার বস ${BOT_CREDIT} মেয়ে দেখতে গেছিলো-🙃-নাস্তা আনারস আর দুধ দিছো-🙄🤦‍♂️-বইন কইলেই তো হয় বয়ফ্রেন্ড আছে-🥺🤦-আমার বস ${BOT_CREDIT} কে জানে মারার কি দরকার-🙄🤧`,
+  `ওই বেডি তোমার বাসায় না আমার বস 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐ মেয়ে দেখতে গেছিলো-🙃-নাস্তা আনারস আর দুধ দিছো-🙄🤦‍♂️-বইন কইলেই তো হয় বয়ফ্রেন্ড আছে-🥺🤦-আমার বস 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐ কে জানে মারার কি দরকার-🙄🤧`,
   `একদিন সে ঠিকই ফিরে তাকাবে-😇-আর মুচকি হেসে বলবে ওর মতো আর কেউ ভালবাসেনি-🙂😅\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
   "হুদাই গ্রুপে আছি-🥺🐸-কেও ইনবক্সে নক দিয়ে বলে না জান তোমারে আমি অনেক ভালোবাসি-🥺🤧",
   "কি'রে গ্রুপে দেখি একটাও বেডি নাই-🤦‍🥱💦",
-  `দেশের সব কিছুই চুরি হচ্ছে-🙄-শুধু আমার বস ${BOT_CREDIT} এর মনটা ছাড়া-🥴😑😏\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
+  `দেশের সব কিছুই চুরি হচ্ছে-🙄-শুধু আমার বস 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐ এর মনটা ছাড়া-🥴😑😏\n\n𝗪𝗵𝗮𝘁𝗮𝗔𝗽𝗽 +8801943488192`,
   "🫵তোমারে প্রচুর ভাল্লাগে-😽-সময় মতো প্রপোজ করমু বুঝছো-🔨😼-ছিট খালি রাইখো- 🥱🐸🥵",
   "আজ থেকে আর কাউকে পাত্তা দিমু চিহ্নিত না -!😏-কারণ আমি ফর্সা হওয়ার ক্রিম কিনছি -!🙂🐸",
   `🌺⎯͢⎯⃝⎯͢⎯⃝\n\nএ্ঁ"এ্ঁ,,চু্ঁ"প্ঁ,,চু্ঁ"প্ঁ≛⃝,\n\n😾𝄟 ❈┉❥︎❥︎ꔹ┄🐰🐰`,
@@ -308,7 +321,7 @@ const funnyReplies = [
   `:❯⁽🥂₎┆____মা𝆠፝֟য়༐ সব𝆠፝֟༐র প্র𝆠፝֟তি আ𝆠፝֟সে না,,য༐𝆠፝֟র প্র𝆠፝֟তি আ𝆠፝֟সে সে ক𝆠፝֟খ𝆠፝֟নো বু𝆠፝֟ঝে ন༐!🫶🫠🌸 ⁽🥢₎⊹-'́💜 ⊹.\n\n☺️🫶🎀ʝυɯҽʅ━♡َ❯❯ 🩷🪽࿐`,
   `𖥔🍶🤍🌷🎀\n\n─ ─  ─ ─ ─ ──  ─  ─  ─  ─ ─  ─ ─  ─ ─ ✧জীবন চলেছে এক অজানা গল্পের দিকে,,যারা শেষ কোথায় জানা নেই.!!🌷🫶🙂🎀\n\n𝄗 .ʿ𖣁.ʝυɯҽʅ𝅄۫🩷⊹🩶ღ₊\n\n﹌﹌﹌﹌﹌﹌﹌﹌﹌﹌𐙚 !`,
   `𖥔🍶🤍🌷\n\n🌷🎻︱─ ─ ─ ─ ─আমি হারিয়ে যাওয়া এক চিঠি"যা পৌঁছানোর আগে চিরে ফেলা হয়েছে ─ ─ ❯⤿🙂❤️‍🩹🪽⤸ -/ᜊ\n\n--🅙𝐮𝐰𝐞𝐥❯🪻🩷🪄ㅤㅤㅤ ㅤ!`,
-  `٭ ⣿ ˔🎻 ๑\n\n𝄖𝄗𝄗𝄙𝄙𝄗𝄗𝄖\n\n⊹ ⎯ 🍥️️️️️ ֹ︵ ️️️️️️️️️️️️️️𐙚️️️️️️️️️️️️️️ __কেউ কারো আপন নয়,,কিছুটা মায়া"আর বাকিটা অভিনয় "..__ ːꜛ:-❫ ⋆ 😅💔🪽🥢\n\n⇄🅙𝐮𝐰𝐞𝐥 !¡ -💗🌷🙂`,
+  `٭ ⣿ ˔🎻 ๑\n\n𝄖𝄗𝄗𝄙𝄙𝄗𝄗𝄖\n\n⊹ ⎯ 🍥️️️️️ ֹ︵ ️️️️️️️️️️️️️️𐙚️️️️️️️️️️️️️️ কেউ কারো আপন নয়,,কিছুটা মায়া"আর বাকিটা অভিনয় "..__ ːꜛ:-❫ ⋆ 😅💔🪽🥢\n\n⇄🅙𝐮𝐰𝐞𝐥 !¡ -💗🌷🙂`,
   `───⤹💗⤸📰🌷🥢🪶\n\n╰─✎⿻ - - *জীবনটা ঘড়ির কাটার মতো হয়ে গেছে, প্রয়োজন ছাড়া কেউ ফিরেও তাকায় না.!🥺🖤* \n\n___۵__৫"অপ্রিয়"ܔ🅙𝐮𝐰𝐞𝐥😅𓆪🖤🌷ㅤㅤㅤ ㅤ!`,
   `٭ ⣿ ˔🎻 ๑\n\n𝄖𝄗𝄗𝄙𝄙𝄗𝄗𝄖\n\n⊹ ⎯ 🍥️️️️️ ֹ︵ ️️️️️️️️️️️️️️𐙚️️️️️️️️️️️️️️ কে𝆠፝֟উ ক༏𝆠፝֟রে༏𝆠፝֟ অ༏𝆠፝֟পন𝆠፝֟ ন𝆠፝֟য়,,কি𝆠፝֟ছুট༏𝆠፝֟ ম༏𝆠፝֟য়༏𝆠፝֟"অ༏𝆠፝֟র ব༏𝆠፝֟কিট༏𝆠፝֟ অ𝆠፝֟ভিন𝆠፝֟য় "...! ːꜛ:-❫ ⋆ 🙂🌷🪽🥢\n\n⇄🅙𝆠፝֟𝐮𝐰𝆠፝֟𝐞𝐥 !¡ -💗🌷🙂`,
   `───⤹󰟱⤸︵🩷🪽\n\n╰─⤹➥꯭‌𝆺꯭𝅥‌〲𝐘𝗼͜͡𝘂 𝐀𝗿𝗲 𝐓𝗵𝗲 𝐌𝗼͜͡𝘀𝘁 𝐏𝗿𝗲𝗰͜͡𝗶𝗼𝘂𝘀 𝐏𝗮͜͡𝗿𝘁 𝐎𝐟 𝐌𝘆 𝐋𝗶𝗳͜͡𝗲〲⊰𝟑⤹🐝🌷🌻⤸ ✧ !`,
@@ -371,10 +384,10 @@ module.exports.config = {
     "nila", "jui", "tisha", "pia", "pakhi", "mim"
   ],
   premium: false,
-  version: "1.6.0",
+  version: "1.6.1",
   hasPermssion: 0,
   credits: "乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐",
-  description: `AI auto teach + Typing effect | Credit: ${BOT_CREDIT}`,
+  description: `AI auto teach + Typing effect | Credit: 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐`,
   commandCategory: "chat",
   usages: "[query] | teach [Q] - [A] | tc [Q] - [A] | টিস [Q] - [A]",
   cooldowns: 0,
@@ -402,7 +415,7 @@ async function handleTeach(api, event, uid, query) {
   const parts = cleaned.split(" - ");
   if (parts.length < 2 || !parts[0].trim() || !parts[1].trim()) {
     return api.sendMessage(
-      `❌ | ব্যবহার: teach [প্রশ্ন] - [উত্তর]\n\n📌 উদাহরণ:\n• baby teach hi - hello\n• baby tc hi - hello\n• baby টিস hi - hello\n\n💠 Credit: ${BOT_CREDIT}`,
+      `❌ | ব্যবহার: teach [প্রশ্ন] - [উত্তর]\n\n📌 উদাহরণ:\n• baby teach hi - hello\n• baby tc hi - hello\n• baby টিস hi - hello\n\n💠 Credit: 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐`,
       event.threadID, event.messageID
     );
   }
@@ -415,13 +428,13 @@ async function handleTeach(api, event, uid, query) {
       `${baseApiUrl}?teach=${encodeURIComponent(ask)}&reply=${encodeURIComponent(ans)}&senderID=${uid}&threadID=${event.threadID}`
     );
     return api.sendMessage(
-      `✅ | নতুন টিচ যোগ হয়েছে!\n\n❓ প্রশ্ন: ${ask}\n💬 উত্তর: ${ans}\n\n💠 Credit: ${BOT_CREDIT}`,
+      `✅ | নতুন টিচ যোগ হয়েছে!\n\n❓ প্রশ্ন: ${ask}\n💬 উত্তর: ${ans}\n\n💠 Credit: 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐`,
       event.threadID, event.messageID
     );
   } catch (e) {
     console.error("Teach Error:", e.message);
     return api.sendMessage(
-      `❌ | টিচ যোগ করা যায়নি!\n\n💠 Credit: ${BOT_CREDIT}`,
+      `❌ | টিচ যোগ করা যায়নি!\n\n💠 Credit: 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐`,
       event.threadID, event.messageID
     );
   }
@@ -431,6 +444,7 @@ async function handleTeach(api, event, uid, query) {
 module.exports.run = async function ({ api, event, args, Users }) {
   if (event.senderID === api.getCurrentUserID()) return;
   if (!isCreditValid()) return api.sendMessage(CREDIT_WARNING, event.threadID, event.messageID);
+  if (alreadyHandled(event.messageID)) return; // ডুপ্লিকেট গার্ড
 
   const uid = event.senderID;
   const senderName = await Users.getNameUser(uid);
@@ -452,18 +466,18 @@ module.exports.run = async function ({ api, event, args, Users }) {
       const parts = cleaned.split(" - ");
       if (parts.length < 1 || !parts[0].trim())
         return api.sendMessage(
-          `❌ | ব্যবহার: remove [প্রশ্ন]\n\n💠 Credit: ${BOT_CREDIT}`,
+          `❌ | ব্যবহার: remove [প্রশ্ন]\n\n💠 Credit: 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐`,
           event.threadID, event.messageID
         );
       const ask = parts[0].trim();
       try {
         await axios.get(`${baseApiUrl}?remove=${encodeURIComponent(ask)}&senderID=${uid}`);
         return api.sendMessage(
-          `✅ | রিমুভ করা হয়েছে!\n\n❓ প্রশ্ন: ${ask}\n\n💠 Credit: ${BOT_CREDIT}`,
+          `✅ | রিমুভ করা হয়েছে!\n\n❓ প্রশ্ন: ${ask}\n\n💠 Credit: 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐`,
           event.threadID, event.messageID
         );
       } catch (e) {
-        return api.sendMessage(`❌ | রিমুভ করা যায়নি!\n\n💠 Credit: ${BOT_CREDIT}`, event.threadID, event.messageID);
+        return api.sendMessage(`❌ | রিমুভ করা যায়নি!\n\n💠 Credit: 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐`, event.threadID, event.messageID);
       }
     }
 
@@ -473,12 +487,12 @@ module.exports.run = async function ({ api, event, args, Users }) {
         const res = await axios.get(`${baseApiUrl}?list=all`);
         if (res.data) {
           return api.sendMessage(
-            `❇️ | Total Teach = ${res.data.length || "0"}\n♻️ | Total Response = ${res.data.responseLength || "0"}\n\n💠 Credit: ${BOT_CREDIT}`,
+            `❇️ | Total Teach = ${res.data.length || "0"}\n♻️ | Total Response = ${res.data.responseLength || "0"}\n\n💠 Credit: 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐`,
             event.threadID, event.messageID
           );
-        } else return api.sendMessage(`❌ Error getting list\n\n💠 Credit: ${BOT_CREDIT}`, event.threadID, event.messageID);
+        } else return api.sendMessage(`❌ Error getting list\n\n💠 Credit: 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐`, event.threadID, event.messageID);
       } catch (e) {
-        return api.sendMessage(`❌ Error getting list\n\n💠 Credit: ${BOT_CREDIT}`, event.threadID, event.messageID);
+        return api.sendMessage(`❌ Error getting list\n\n💠 Credit: 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐`, event.threadID, event.messageID);
       }
     }
 
@@ -488,7 +502,7 @@ module.exports.run = async function ({ api, event, args, Users }) {
       const parts = cleaned.split(" - ");
       if (parts.length < 2)
         return api.sendMessage(
-          `❌ | ব্যবহার: edit [প্রশ্ন] - [নতুন উত্তর]\n\n💠 Credit: ${BOT_CREDIT}`,
+          `❌ | ব্যবহার: edit [প্রশ্ন] - [নতুন উত্তর]\n\n💠 Credit: 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐`,
           event.threadID, event.messageID
         );
       const ask = parts[0].trim();
@@ -496,19 +510,18 @@ module.exports.run = async function ({ api, event, args, Users }) {
       try {
         await axios.get(`${baseApiUrl}?edit=${encodeURIComponent(ask)}&replace=${encodeURIComponent(newReply)}&senderID=${uid}`);
         return api.sendMessage(
-          `✅ | এডিট হয়েছে!\n\n❓ প্রশ্ন: ${ask}\n💬 নতুন উত্তর: ${newReply}\n\n💠 Credit: ${BOT_CREDIT}`,
+          `✅ | এডিট হয়েছে!\n\n❓ প্রশ্ন: ${ask}\n💬 নতুন উত্তর: ${newReply}\n\n💠 Credit: 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐`,
           event.threadID, event.messageID
         );
       } catch (e) {
-        return api.sendMessage(`❌ | এডিট করা যায়নি!\n\n💠 Credit: ${BOT_CREDIT}`, event.threadID, event.messageID);
+        return api.sendMessage(`❌ | এডিট করা যায়নি!\n\n💠 Credit: 乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐`, event.threadID, event.messageID);
       }
     }
 
     // ✅ কোনো query নেই → ফানি রিপ্লাই
     if (!query) {
-      const texts = ["Hey baby 💖", "Yes, I'm here 😘"];
-      const reply = texts[Math.floor(Math.random() * texts.length)];
-      return api.sendMessage(processReply(reply), event.threadID);
+      await sendFunnyReplyWithImage(api, event, uid, senderName);
+      return;
     }
 
     // ✅ AI REPLY
@@ -540,6 +553,7 @@ module.exports.run = async function ({ api, event, args, Users }) {
 module.exports.handleReply = async function ({ api, event, Users }) {
   if (event.senderID === api.getCurrentUserID()) return;
   if (!isCreditValid()) return api.sendMessage(CREDIT_WARNING, event.threadID, event.messageID);
+  if (alreadyHandled(event.messageID)) return; // ডুপ্লিকেট গার্ড
 
   const senderName = await Users.getNameUser(event.senderID);
   const text = event.body?.toLowerCase();
@@ -590,6 +604,7 @@ module.exports.handleEvent = async function ({ api, event, Users }) {
 
   if (!isExactTrigger && !hasPrefix && !isReplyToBot) return;
   if (!isCreditValid()) return api.sendMessage(CREDIT_WARNING, event.threadID, event.messageID);
+  if (alreadyHandled(event.messageID)) return; // ডুপ্লিকেট গার্ড
 
   if (isExactTrigger) {
     await sendTypingIndicator(api, event.threadID);
