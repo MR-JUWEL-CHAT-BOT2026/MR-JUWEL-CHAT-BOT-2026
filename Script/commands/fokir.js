@@ -16,7 +16,7 @@ module.exports.config = {
 
 // ===== সেটিংস =====
 const COOLDOWN_MS = 60 * 1000; // ১ জন ইউজার ১ মিনিটে ১ বার
-const BOSS_NOTICE = "乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐ বসকে RIP করা জাবে না রে পাগলা";
+const BOSS_NOTICE = "乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐ বসকে FOKIR করা জাবে না রে পাগলা";
 const CAPTION = "নে 🐸 ফকির ভিক্ষা নে🤣🫵";
 const TEMPLATE_URL = "https://i.imgur.com/dpBuLK3.jpeg";
 
