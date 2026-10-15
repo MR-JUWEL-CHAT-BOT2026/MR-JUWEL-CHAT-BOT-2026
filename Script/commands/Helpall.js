@@ -119,11 +119,3 @@ ${commandList}
 module.exports.run = async function ({ api, event }) {
   return sendHelp(api, event);
 };
-
-// 🔥 নো-প্রিফিক্স ট্রিগার
-module.exports.handleEvent = async function ({ api, event }) {
-  const msg = (event.body || "").toLowerCase();
-  if (msg === "helpall" || msg === "allcmd") {
-    return sendHelp(api, event);
-  }
-};
