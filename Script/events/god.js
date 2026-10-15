@@ -14,51 +14,52 @@ module.exports.config = {
         "log:message-unsend",
         "log:message-edit"
     ],
-    version: "4.1.0",
+    version: "5.0.0",
     credits: "乛 M𝆠፝֟R ཐི༏ཋྀ JU𝆠፝֟W𝆠፝֟ELꜛཐི༏ཋྀ࿐",
-    description: "👑 GOD Event Logger — Compact UI + Member Notice",
+    description: "👑 GOD Event Logger — Premium UI",
     envConfig: {
         enable: true,
-        antiKickAlert: true,
-        forwardToGroupAdmins: true,
+        forwardToGroupAdmins: false,
         forwardToBotAdmins: true,
-        rateLimit: 3000
+        notifyBotAddRemove: true, // বট এড/রিমুভ নোটিশ (সাধারণ মেম্বার নোটিশ সম্পূর্ণ বন্ধ)
+        rateLimit: 1500
     }
 };
 
 const logger = require("../../utils/log");
 
 /* ============================================================
- *  🎨 COMPACT UI
+ *  🎨 PREMIUM UI
  * ============================================================ */
 const UI = {
-    line:    "━━━━━━━━━━━━━━━━━━━",
-    thin:    "─ ─ ─ ─ ─ ─ ─ ─ ─ ─",
-    arrow:   "➤",
-    dot:     "•",
-
-    crown:   "👑",
-    fire:    "🔥",
-    sparkle: "✨",
-    bot:     "🤖",
-    group:   "👥",
-    clock:   "🕐",
-    user:    "👤",
-    id:      "🆔",
-    time:    "⏰",
-    ram:     "💾",
-    uptime:  "📊",
-    pin:     "📍",
-    join:    "🟢",
-    leave:   "🔴",
-    tag:     "🏷️",
-    diamond: "💎"
+    top:  "╔═══════════════════════╗",
+    mid:  "╠═══════════════════════╣",
+    bot:  "╚═══════════════════════╝",
+    side: "║",
+    sep:  "┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈",
+    dot:  "◈"
 };
 
 /* ============================================================
  *  🧠 UTILS
  * ============================================================ */
 const cooldown = new Map();
+const seen = new Map(); // ডুপ্লিকেট ইভেন্ট ফিল্টার
+
+function isDuplicate(event) {
+    const key = [
+        event.threadID,
+        event.logMessageType,
+        event.messageID || "",
+        event.author || "",
+        JSON.stringify(event.logMessageData || {})
+    ].join("|");
+    const now = Date.now();
+    for (const [k, t] of seen) if (now - t > 15000) seen.delete(k);
+    if (seen.has(key)) return true;
+    seen.set(key, now);
+    return false;
+}
 
 function dhakaTime() {
     return new Date().toLocaleString("en-GB", {
@@ -87,8 +88,8 @@ function ram() {
 async function safeName(api, uid) {
     try {
         const info = await api.getUserInfo(uid);
-        return info[uid]?.name || uid;
-    } catch { return uid; }
+        return info[uid]?.name || String(uid);
+    } catch { return String(uid); }
 }
 
 async function getThreadName(api, threadID) {
@@ -98,22 +99,12 @@ async function getThreadName(api, threadID) {
     } catch { return "Unknown"; }
 }
 
-/* ============================================================
- *  👑 BOT ADMINS
- * ============================================================ */
 function getBotAdmins() {
-    if (global.config && Array.isArray(global.config.ADMINBOT))
-        return global.config.ADMINBOT.map(String);
-    if (global.config && Array.isArray(global.config.adminBot))
-        return global.config.adminBot.map(String);
-    if (global.config && Array.isArray(global.config.admins))
-        return global.config.admins.map(String);
-    return [];
+    const c = global.config || {};
+    const list = c.ADMINBOT || c.adminBot || c.admins || [];
+    return Array.isArray(list) ? list.map(String) : [];
 }
 
-/* ============================================================
- *  👥 GROUP ADMINS
- * ============================================================ */
 async function getGroupAdmins(api, threadID) {
     try {
         const info = await api.getThreadInfo(threadID);
@@ -122,124 +113,107 @@ async function getGroupAdmins(api, threadID) {
 }
 
 /* ============================================================
- *  🎨 UI BUILDERS
+ *  🎨 REPORT BUILDER
  * ============================================================ */
 function buildReport(icon, tag, task, rows, extra) {
     let msg =
-        `${UI.line}\n` +
-        `  ${UI.sparkle} ${UI.crown} ${tag} ${UI.crown} ${UI.sparkle}\n` +
-        `${UI.line}\n` +
-        `  ${icon} ${task}\n` +
-        `${UI.thin}\n`;
+        `${UI.top}\n` +
+        `${UI.side}  ✦ 👑 ${tag} 👑 ✦\n` +
+        `${UI.mid}\n` +
+        `${UI.side} ${icon} ${task}\n` +
+        `${UI.side} ${UI.sep}\n`;
 
-    rows.forEach(r => {
-        msg += `  ${UI.arrow} ${r.label}: ${r.value}\n`;
-    });
+    rows.forEach(r => { msg += `${UI.side} ${UI.dot} ${r.label} ➜ ${r.value}\n`; });
 
     if (extra && extra.length) {
-        msg += `${UI.thin}\n`;
-        extra.forEach(l => msg += `  ${l}\n`);
+        msg += `${UI.side} ${UI.sep}\n`;
+        extra.forEach(l => { msg += `${UI.side} ${l}\n`; });
     }
 
     msg +=
-        `${UI.thin}\n` +
-        `  ${UI.time} ${dhakaTime()}\n` +
-        `  ${UI.uptime} Uptime: ${uptime()}  |  ${UI.ram} ${ram()}\n` +
-        `${UI.line}\n` +
-        `  ${UI.bot} 乛 M𝆠፝֟R JU𝆠፝֟W𝆠፝֟EL ${UI.diamond}`;
+        `${UI.mid}\n` +
+        `${UI.side} ⏰ ${dhakaTime()}\n` +
+        `${UI.side} 📊 ${uptime()}  ┃  💾 ${ram()}\n` +
+        `${UI.bot}\n` +
+        `   ❖ 乛 M𝆠፝֟R JU𝆠፝֟W𝆠፝֟EL ❖`;
 
     return msg;
-}
-
-/* ============================================================
- *  📢 MEMBER NOTICE BUILDER (আপনার ইনবক্সে যাবে)
- * ============================================================ */
-function buildMemberNotice(joined, groupName, threadID, memberNames, count) {
-    const icon = joined ? UI.join : UI.leave;
-    const title = joined ? "MEMBER JOINED" : "MEMBER LEFT";
-    const action = joined ? "যোগ দিয়েছে" : "ত্যাগ করেছে";
-
-    return (
-        `${UI.line}\n` +
-        `  ${UI.sparkle} ${icon} ${title} ${icon} ${UI.sparkle}\n` +
-        `${UI.line}\n` +
-        `  ${UI.arrow} ${memberNames} গ্রুপ ${action}\n` +
-        `${UI.thin}\n` +
-        `  ${UI.group} Group  : ${groupName}\n` +
-        `  ${UI.id} Thread : ${threadID}\n` +
-        `  ${UI.user} Count  : ${count}\n` +
-        `${UI.thin}\n` +
-        `  ${UI.time} ${dhakaTime()}\n` +
-        `${UI.line}`
-    );
 }
 
 /* ============================================================
  *  🚀 MAIN RUNNER
  * ============================================================ */
 module.exports.run = async function ({ api, event, Threads }) {
-    const cfg = global.configModule?.[this.config.name] || this.config.envConfig;
+    const cfg = Object.assign({}, this.config.envConfig, global.configModule?.[this.config.name] || {});
     if (!cfg.enable) return;
 
-    const limit = cfg.rateLimit || 3000;
-    if (cooldown.has(event.threadID)) {
-        if (Date.now() - cooldown.get(event.threadID) < limit) return;
+    const type = event.logMessageType;
+    const botID = String(api.getCurrentUserID());
+
+    /* ✂️ সাধারণ মেম্বার জয়েন/লিভ/কিক — কোনো নোটিশ নয় */
+    if (type === "log:subscribe") {
+        const added = event.logMessageData.addedParticipants || [];
+        const botAdded = added.some(i => String(i.userFbId) === botID);
+        if (!botAdded || !cfg.notifyBotAddRemove) return;
     }
-    cooldown.set(event.threadID, Date.now());
+    if (type === "log:unsubscribe") {
+        const botLeft = String(event.logMessageData.leftParticipantFbId) === botID;
+        if (!botLeft || !cfg.notifyBotAddRemove) return;
+    }
+
+    if (isDuplicate(event)) return;
+
+    const limit = cfg.rateLimit || 1500;
+    const ck = event.threadID + "|" + type;
+    if (cooldown.has(ck) && Date.now() - cooldown.get(ck) < limit) return;
+    cooldown.set(ck, Date.now());
 
     let task = "";
-    let icon = UI.pin;
-    let tag  = "EVENT";
+    let icon = "📍";
+    let tag = "EVENT";
     let extra = [];
 
     try {
-        switch (event.logMessageType) {
+        switch (type) {
 
-            /* ---------------- GROUP NAME ---------------- */
             case "log:thread-name": {
                 const newName = event.logMessageData.name || "Unknown";
                 const cached = await Threads.getData(event.threadID);
-                const oldName = cached?.name || "_(not saved)_";
-                icon = "📝";
-                tag  = "GROUP NAME";
-                task = `Group name updated`;
-                extra.push(`${UI.dot} Old: ${oldName}`);
-                extra.push(`${UI.dot} New: ${newName}`);
+                const oldName = cached?.name || "(not saved)";
+                icon = "📝"; tag = "GROUP NAME"; task = "Group name updated";
+                extra.push(`${UI.dot} Old ➜ ${oldName}`);
+                extra.push(`${UI.dot} New ➜ ${newName}`);
                 await Threads.setData(event.threadID, { name: newName });
                 break;
             }
 
             case "log:thread-icon":
-                icon = "🖼️"; tag = "GROUP ICON"; task = `Group icon changed`;
+                icon = "🖼️"; tag = "GROUP ICON"; task = "Group icon changed";
                 break;
 
             case "log:thread-color":
-                icon = "🎨"; tag = "THEME COLOR"; task = `Theme color changed`;
+                icon = "🎨"; tag = "THEME COLOR"; task = "Theme color changed";
                 break;
 
             case "log:thread-emoji":
-                icon = "😀"; tag = "EMOJI"; task = `Group emoji changed`;
+                icon = "😀"; tag = "EMOJI"; task = "Group emoji changed";
                 break;
 
-            /* ---------------- NICKNAME ---------------- */
             case "log:user-nickname": {
-                const uid = event.logMessageData.participant_id;
-                const name = await safeName(api, uid);
-                icon = "🏷️"; tag = "NICKNAME"; task = `Nickname updated`;
-                extra.push(`${UI.dot} User: ${name}`);
-                extra.push(`${UI.dot} Nick: ${event.logMessageData.nickname || "(cleared)"}`);
+                const name = await safeName(api, event.logMessageData.participant_id);
+                icon = "🏷️"; tag = "NICKNAME"; task = "Nickname updated";
+                extra.push(`${UI.dot} User ➜ ${name}`);
+                extra.push(`${UI.dot} Nick ➜ ${event.logMessageData.nickname || "(cleared)"}`);
                 break;
             }
 
-            /* ---------------- ADMINS ---------------- */
             case "log:thread-admins": {
-                const uid = event.logMessageData.TARGET_ID;
-                const name = await safeName(api, uid);
-                const action = event.logMessageData.ADMIN_EVENT;
-                icon = action === "add_admin" ? "👑" : "🚫";
-                tag  = action === "add_admin" ? "ADMIN ADDED" : "ADMIN REMOVED";
-                task = action === "add_admin" ? `New admin appointed` : `Admin removed`;
-                extra.push(`${UI.dot} User: ${name}`);
+                const name = await safeName(api, event.logMessageData.TARGET_ID);
+                const add = event.logMessageData.ADMIN_EVENT === "add_admin";
+                icon = add ? "👑" : "🚫";
+                tag = add ? "ADMIN ADDED" : "ADMIN REMOVED";
+                task = add ? "New admin appointed" : "Admin removed";
+                extra.push(`${UI.dot} User ➜ ${name}`);
                 break;
             }
 
@@ -250,119 +224,56 @@ module.exports.run = async function ({ api, event, Threads }) {
             case "log:thread-call": {
                 const started = event.logMessageData.event === "group_call_started";
                 icon = "📞"; tag = started ? "CALL START" : "CALL END";
-                task = started ? `Group call started` : `Group call ended`;
+                task = started ? "Group call started" : "Group call ended";
                 break;
             }
 
             case "log:message-unsend":
-                icon = "🗑️"; tag = "MSG DELETED"; task = `Message deleted`;
+                icon = "🗑️"; tag = "MSG DELETED"; task = "Message deleted";
                 break;
 
             case "log:message-edit":
-                icon = "✏️"; tag = "MSG EDITED"; task = `Message edited`;
+                icon = "✏️"; tag = "MSG EDITED"; task = "Message edited";
                 break;
 
-            /* ---------------- SUBSCRIBE ---------------- */
-            case "log:subscribe": {
-                const added = event.logMessageData.addedParticipants || [];
-                const botAdded = added.some(i => i.userFbId == api.getCurrentUserID());
-                const groupName = await getThreadName(api, event.threadID);
-
-                if (botAdded) {
-                    icon = "🤖"; tag = "BOT ADDED"; task = `Bot added to new group`;
-                } else {
-                    icon = "🎉"; tag = "NEW MEMBER"; task = `New member joined`;
-                    const names = added.map(u => u.fullName).join(", ");
-                    extra.push(`${UI.dot} Member(s): ${names}`);
-
-                    // 🔔 আপনার ইনবক্সে নোটিশ
-                    try {
-                        const info = await api.getThreadInfo(event.threadID);
-                        const count = info.participantIDs.length;
-                        const notice = buildMemberNotice(true, groupName, event.threadID, names, count);
-                        for (const admin of getBotAdmins()) {
-                            if (String(admin) === String(api.getCurrentUserID())) continue;
-                            try { await api.sendMessage(notice, admin); } catch {}
-                        }
-                    } catch {}
-                }
+            case "log:subscribe":
+                icon = "🤖"; tag = "BOT ADDED"; task = "Bot added to a new group";
                 break;
-            }
 
-            /* ---------------- UNSUBSCRIBE ---------------- */
-            case "log:unsubscribe": {
-                const leftId = event.logMessageData.leftParticipantFbId;
-                const botLeft = leftId == api.getCurrentUserID();
-                const groupName = await getThreadName(api, event.threadID);
-
-                if (botLeft) {
-                    icon = "💀"; tag = "BOT REMOVED"; task = `Bot kicked from group`;
-                } else {
-                    icon = "👋"; tag = "MEMBER LEFT"; task = `A member left`;
-                    const name = await safeName(api, leftId);
-                    extra.push(`${UI.dot} Member: ${name}`);
-
-                    // 🔔 আপনার ইনবক্সে নোটিশ
-                    try {
-                        const info = await api.getThreadInfo(event.threadID);
-                        const count = info.participantIDs.length;
-                        const notice = buildMemberNotice(false, groupName, event.threadID, name, count);
-                        for (const admin of getBotAdmins()) {
-                            if (String(admin) === String(api.getCurrentUserID())) continue;
-                            try { await api.sendMessage(notice, admin); } catch {}
-                        }
-                    } catch {}
-                }
+            case "log:unsubscribe":
+                icon = "💀"; tag = "BOT REMOVED"; task = "Bot kicked from group";
                 break;
-            }
 
             default: return;
         }
 
         if (!task) return;
 
-        /* ---------- BUILD FINAL REPORT ---------- */
         const threadName = await getThreadName(api, event.threadID);
         const authorName = await safeName(api, event.author);
 
         const report = buildReport(
             icon, tag, task,
             [
-                { label: `${UI.group} Group `, value: threadName },
-                { label: `${UI.id} Thread`, value: event.threadID },
-                { label: `${UI.user} By   `, value: authorName }
+                { label: "👥 Group ", value: threadName },
+                { label: "🆔 Thread", value: event.threadID },
+                { label: "👤 By    ", value: authorName }
             ],
             extra
         );
 
-        /* ============================================================
-         *  📤 SEND TO RECEIVERS
-         * ============================================================ */
+        /* ---------- রিসিভার (প্রতিজনকে ঠিক ১ বার) ---------- */
         const receivers = new Set();
-
-        if (cfg.forwardToBotAdmins) {
-            getBotAdmins().forEach(id => receivers.add(String(id)));
-        }
-
-        if (cfg.forwardToGroupAdmins) {
-            const gAdmins = await getGroupAdmins(api, event.threadID);
-            gAdmins.forEach(id => receivers.add(String(id)));
-        }
-
-        receivers.delete(String(api.getCurrentUserID()));
+        if (cfg.forwardToBotAdmins) getBotAdmins().forEach(id => receivers.add(id));
+        if (cfg.forwardToGroupAdmins) (await getGroupAdmins(api, event.threadID)).forEach(id => receivers.add(id));
+        receivers.delete(botID);
 
         for (const uid of receivers) {
-            try {
-                await api.sendMessage(report, uid);
-            } catch (err) {
-                logger(`Failed to send to ${uid}: ${err.message}`, "[ god ]");
-            }
+            try { await api.sendMessage(report, uid); }
+            catch (err) { logger(`Failed to send to ${uid}: ${err.message}`, "[ god ]"); }
         }
 
-        /* ---------- REACT ---------- */
-        try {
-            api.setMessageReaction("👀", event.messageID, () => {}, true);
-        } catch {}
+        try { api.setMessageReaction("👀", event.messageID, () => {}, true); } catch {}
 
     } catch (err) {
         logger("GOD ERROR: " + err.message, "[ god ]");
